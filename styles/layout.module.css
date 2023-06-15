@@ -1,0 +1,15 @@
+.current{
+    @apply bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium animate-pulse
+  }
+  
+  .inactive{
+    @apply text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium
+  }
+  
+  .currentMobile{
+    @apply bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium animate-pulse
+  }
+  
+  .inactiveMobile{
+    @apply text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium
+  }
