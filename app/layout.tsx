@@ -22,8 +22,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <Navbar></Navbar>
-        {children}</body>
+        <div className='flex flex-col h-screen'>
+          <Navbar></Navbar>
+          {children}
+        </div>
+        </body>
     </html>
   )
 }
