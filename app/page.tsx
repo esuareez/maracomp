@@ -1,7 +1,10 @@
 import Image from 'next/image'
 import RootLayout from './layout'
 import { metadata } from './layout'
-import Chart from '@/components/bar'
+import 'material-icons/iconfont/material-icons.css';
+import Dona from '@/components/doughtnut'
+import Linea from '@/components/linear';
+
 
 
 metadata.title = 'MaraComp | Inicio'
@@ -13,19 +16,76 @@ export default function Home() {
         {/* Cuadro de la izquierda con estadisticas y datos */}
         <div className='col-span-8 w-full h-full grid grid-rows gap-4'>
           {/* Dos filas encima de las estadisticas */}
-          <div className='row-span-2 grid grid-rows md:grid-cols-12 gap-4'>
-            <div className='col-span-4 w-full h-full bg-pink-400 rounded-[20px]'></div>
-            <div className='col-span-4 w-full h-full bg-pink-400 rounded-[20px]'></div>
-            <div className='col-span-4 w-full h-full bg-pink-400 rounded-[20px]'></div>
+          <div className='row-span-2 grid grid-rows md:grid-cols-12 gap-4 '>
+            <div className='col-span-4 w-full h-full bg-verde  rounded-2xl shadow container mx-auto'>
+              <div className='flex flex-col items-center justify-center h-full'>
+                <h1 className='text-2xl text-white/80 font-semibold '>Ordenes</h1>
+                <div className='w-60 h-60'>
+                  <Dona></Dona>
+                </div>
+                
+              </div>
+            </div>
+            <div className='col-span-4 gap-4 shadow grid grid-rows-6'>
+              <div className='row-span-3 w-full h-full bg-gradient-to-tl from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center'>
+                <h1 className=' text-lg text-white/80 drop-shadow font-semibold'>Ordenes Completadas</h1>
+                <h1 className='text-4xl text-white font-black'>12</h1> 
+              </div>
+              <div className='row-span-3 w-full h-full bg-gradient-to-bl from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center'>
+                <h1 className=' text-lg text-white/80 drop-shadow font-semibold'>Ordenes Pendientes</h1>
+                <h1 className='text-4xl text-white font-black'>12</h1> 
+              </div>
+            </div>
+            <div className='col-span-4 gap-4 shadow grid grid-rows-6'>
+              <div className='row-span-3 w-full h-full bg-gradient-to-tr from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center'>
+                <h1 className=' text-lg text-white/80 drop-shadow font-semibold'>Total Vendido</h1>
+                <h1 className='text-4xl text-white font-black'>12</h1> 
+              </div>
+              <div className='row-span-3 w-full h-full bg-gradient-to-br from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center'>
+                <h1 className=' text-lg text-white/80 drop-shadow font-semibold'>Total Comprado</h1>
+                <h1 className='text-4xl text-white font-black'>12</h1> 
+              </div>
+            </div>
           </div>
           {/* Cuadro de estadistica */}
-          <div className='row-span-4 bg-red-700 rounded-[20px]'>
-            <Chart></Chart>
+          <div className='row-span-4 bg-white rounded-[20px]'>
+            <div className='grid grid-cols-12 p-5 h-full'>
+              <div className='col-span-10 '>
+                <h1 className='font-bold text-3xl'>Estadística</h1>
+                <div className='w-full h-5/6'>
+                  <Linea></Linea>
+                </div>
+              </div>
+            </div>
+            
+            
           </div>
           
         </div>
         {/* Acceso directo (desaparece responsive) */}
-        <div className='col-span-4 hidden md:block w-full h-full bg-blue-500 rounded-[20px]'></div>
+        <div className='col-span-4 hidden md:block w-full h-full bg-white rounded-[20px]'>
+          <div className="p-10">
+            
+            <div className="flex flex-col gap-8">
+            <div className='flex justify-center font-bold text-4xl'>Acceso Directo</div>
+                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
+                  duration-[70ms] '>Componentes</button>
+              
+                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
+                  duration-[70ms] '>Almacenes</button>
+             
+                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
+                  duration-[70ms] '>Suplidores</button>
+               
+                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
+                  duration-[70ms] '>Solicitar Disponibilidad</button>
+               
+                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
+                  duration-[70ms] '>Despachar Componentes</button>
+            </div>
+          </div>
+          
+        </div>
       </div>
     </div>
     
