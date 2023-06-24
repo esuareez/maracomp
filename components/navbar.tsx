@@ -3,7 +3,7 @@
 import React from 'react'
 // Import para el useHover de https://usehooks.com/
 import { useHover } from "@uidotdev/usehooks";
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { UserCircleIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import Link from 'next/link'
@@ -14,6 +14,10 @@ export default function Navbar() {
   const expanded = hovering ? 'block' : 'invisible';
   const [estado, setEstado] = useState('hidden');
   // Extraemos el pathname para saber en qué ventana estamos.
+    const pathname = usePathname();
+    console.log(pathname)
+    const router = useRouter();
+    console.log(router)
   
   return (
         
@@ -44,8 +48,9 @@ export default function Navbar() {
                 <div className="flex space-x-4 ">
                     
                     <Link href="/" className={`${usePathname() === "/" ? styles.current : styles.inactive} `}>Inicio</Link>
-                    <Link href="/suplidores" className={`  ${usePathname() === "/suplidores" ? styles.current : styles.inactive} `}>Suplidores</Link>
-                    <Link href="/inventario" className={`  ${usePathname() === "/inventario" ? styles.current : styles.inactive}`}>Inventario</Link>
+                    <Link href="/components" className={`  ${usePathname() === "/components" ? styles.current : styles.inactive} `}>Componentes</Link>
+                    <Link href="/suppliers" className={`  ${usePathname() === "/suppliers" ? styles.current : styles.inactive} `}>Suplidores</Link>
+                    <Link href="/inventory" className={`  ${usePathname() === "/inventory" ? styles.current : styles.inactive}`}>Inventario</Link>
                 </div>
                 
             </div>

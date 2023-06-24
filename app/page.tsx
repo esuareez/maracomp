@@ -1,14 +1,21 @@
+"use client"
 import Image from 'next/image'
 import RootLayout from './layout'
 import { metadata } from './layout'
 import 'material-icons/iconfont/material-icons.css';
 import Dona from '@/components/doughtnut'
 import Linea from '@/components/linear';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 
 
 metadata.title = 'MaraComp | Inicio'
 export default function Home() {
+  const [open, setOpen] = useState('hidden');
+  const [opciones, setOpciones] = useState('Todos');
+
   return (
     
     <div className='relative bg-gray-700 w-full min-h-[90%] flex flex-grow items-center justify-center'>
@@ -38,7 +45,7 @@ export default function Home() {
             </div>
             <div className='col-span-4 gap-4 shadow grid grid-rows-6'>
               <div className='row-span-3 w-full h-full bg-gradient-to-tr from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center'>
-                <h1 className=' text-lg text-white/80 drop-shadow font-semibold'>Total Vendido</h1>
+                <h1 className=' text-lg text-white/80 shadow-2xl font-semibold'>Total Vendido</h1>
                 <h1 className='text-4xl text-white font-black'>12</h1> 
               </div>
               <div className='row-span-3 w-full h-full bg-gradient-to-br from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center'>
@@ -48,12 +55,36 @@ export default function Home() {
             </div>
           </div>
           {/* Cuadro de estadistica */}
-          <div className='row-span-4 bg-white rounded-[20px]'>
+          <div className='row-span-4 bg-white rounded-[20px]' onClick={() => {open === 'block' ? setOpen('hidden') : open}}>
             <div className='grid grid-cols-12 p-5 h-full'>
               <div className='col-span-10 '>
-                <h1 className='font-bold text-3xl'>Estadística</h1>
+                <h1 className='font-bold text-3xl text-black'>Estadística</h1>
                 <div className='w-full h-5/6'>
                   <Linea></Linea>
+                </div>
+              </div>
+              <div className='col-span-2' >
+                <h1 className='font-bold text-3xl text-black grid grid-rows gap-4'>Filtrar por:</h1>
+                {/* DROPDOWN DE OPCIONES */}
+                <div className="relative inline-block text-left w-full pt-8 col-row-4">
+                <div className="mt-2">
+                      <select id="country" name="country" autocomplete="country-name" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                      <option>United States</option>
+                      <option>Canada</option>
+                      <option>Mexico</option>
+                      </select>
+                  </div>
+                </div>
+                {/* DROPDOWN DE OPCIONES */}
+                <div className="relative inline-block text-left w-full pt-8">
+                  <div className="mt-2">
+                      <select id="country" name="country" autocomplete="country-name" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                      <option>United States</option>
+                      <option>Canada</option>
+                      <option>Mexico</option>
+                      </select>
+                      
+                  </div>
                 </div>
               </div>
             </div>
@@ -67,9 +98,11 @@ export default function Home() {
           <div className="p-10">
             
             <div className="flex flex-col gap-8">
-            <div className='flex justify-center font-bold text-4xl'>Acceso Directo</div>
-                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
-                  duration-[70ms] '>Componentes</button>
+            <div className='flex justify-center font-bold text-4xl text-black'>Acceso Directo</div>
+                  <Link href={`/components`}>
+                    <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
+                    duration-[70ms] '>Componentes</button>
+                  </Link>
               
                   <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
                   duration-[70ms] '>Almacenes</button>
