@@ -12,10 +12,10 @@ import Link from 'next/link';
 
 
 metadata.title = 'MaraComp | Inicio'
-export default function Home() {
+export default async function Home() {
   const [open, setOpen] = useState('hidden');
   const [opciones, setOpciones] = useState('Todos');
-
+  
   return (
     
     <div className='relative bg-gray-700 w-full min-h-[90%] flex flex-grow items-center justify-center'>
@@ -68,7 +68,7 @@ export default function Home() {
                 {/* DROPDOWN DE OPCIONES */}
                 <div className="relative inline-block text-left w-full pt-8 col-row-4">
                 <div className="mt-2">
-                      <select id="country" name="country" autocomplete="country-name" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                      <select id="country" name="country"  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                       <option>United States</option>
                       <option>Canada</option>
                       <option>Mexico</option>
@@ -78,7 +78,7 @@ export default function Home() {
                 {/* DROPDOWN DE OPCIONES */}
                 <div className="relative inline-block text-left w-full pt-8">
                   <div className="mt-2">
-                      <select id="country" name="country" autocomplete="country-name" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                      <select id="country" name="country" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                       <option>United States</option>
                       <option>Canada</option>
                       <option>Mexico</option>
