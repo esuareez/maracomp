@@ -6,34 +6,53 @@ import { useState, useRef } from 'react';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 
 export default async function CreateComponent() {
     
+    const success = () => toast("Componente creado exitosamente");
+    const fail = () => toast("Hubo un error creando el componente");
+    
     const {data : suppliers } = await axios.get('https://api-maracomp-production-864a.up.railway.app/supplier');
-    let status = null
+    let status : any  = 0;
     const handleSubmit = async (event: any) => {
-    event.preventDefault();
+        event.preventDefault();
 
-    const data = {
-        formComponent: {
-            description: event.target.component.value,
-            unit: event.target.unit.value,
-            balance: Number(event.target.balance.value),
-            storeDesc: event.target.store.value,
-        },
-        supplierTime: {
-            supplierId: event.target.supplier.value,
-            price: Number(event.target.price.value),
-            deliveryTimeInDays: Number(event.target.deliveryTimeInDays.value),
-            discount: Number(event.target.discount.value),
-        },
-    };
+        const data = {
+            formComponent: {
+                description: event.target.component.value,
+                unit: event.target.unit.value,
+                balance: Number(event.target.balance.value),
+                storeDesc: event.target.store.value,
+            },
+            supplierTime: {
+                supplierId: event.target.supplier.value,
+                price: Number(event.target.price.value),
+                deliveryTimeInDays: Number(event.target.deliveryTimeInDays.value),
+                discount: Number(event.target.discount.value),
+            },
+        };
 
-    console.log(data);
-    const res = await axios.post('https://api-maracomp-production-864a.up.railway.app/store', data);
-    status = res.status;
-    };
+        console.log(data);
+        const res = await axios.post('https://api-maracomp-production-864a.up.railway.app/store', data)
+        status = res.status;
+        
+        event.target.component.value = '';
+        event.target.unit.value = '';
+        event.target.balance.value = '';
+        event.target.store.value = '';
+        event.target.supplier.value = '';
+        event.target.price.value = '';
+        event.target.deliveryTimeInDays.value = '';
+        event.target.discount.value = '';
+    }
+
+    const notify = () => {
+        if(status === 201)
+            toast("Componente creado exitosamente");
+    }
 
     return (
     <Popup
@@ -202,9 +221,10 @@ export default async function CreateComponent() {
                 <button
                 type='submit'
                 className='rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                >
-                Save
+                onClick={notify}>
+                Guardar
                 </button>
+                <ToastContainer />
             </div>
             </div>
         </form>
