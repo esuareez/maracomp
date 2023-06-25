@@ -8,12 +8,13 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { metadata } from "../layout";
 import axios from "axios";
+import { UserCircleIcon, Bars3Icon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
-  const [componentsPerPage] = useState(3);
+  const [componentsPerPage] = useState(6);
   const [components, setComponents] = useState<any[]>([]);
 
   useEffect(() => {
@@ -76,9 +77,10 @@ export default function Page() {
                 ) : (
                   currentComponents.map((component, index) => (
                     <tr key={index}>
-                      <td>{component.description}</td>
-                      <td>{component.unit}</td>
-                      <td></td>
+                        <td></td>
+                        <td>{component.description}</td>
+                        <td>{component.unit}</td>
+                        <td></td>
                     </tr>
                   ))
                 )}
@@ -92,13 +94,13 @@ export default function Page() {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                   >
-                    Anterior
+                    <ChevronDoubleLeftIcon className="h-6 w-6 text-gray-400 hover:text-white" />
                   </button>
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={indexOfLastComponent >= components.length}
                   >
-                    Siguiente
+                    <ChevronDoubleRightIcon className="h-6 w-6 text-gray-400 hover:text-white" />
                   </button>
                 </div>
               )}

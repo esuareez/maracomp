@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
 
-export default async function CreateSupplier() {
+export default function CreateSupplier() {
 
     const handleSubmit = async (e : any) => {
         e.preventDefault()
