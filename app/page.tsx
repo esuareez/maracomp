@@ -8,13 +8,15 @@ import Linea from '@/components/linear';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import CreateComponent from '@/components/createC';
+import CreateStore from '@/components/store/create'
+import CreateSupplier from '@/components/supplier/create';
 
 
 
 metadata.title = 'MaraComp | Inicio'
 export default async function Home() {
   const [open, setOpen] = useState('hidden');
-  const [opciones, setOpciones] = useState('Todos');
   
   return (
     
@@ -99,16 +101,17 @@ export default async function Home() {
             
             <div className="flex flex-col gap-8">
             <div className='flex justify-center font-bold text-4xl text-black'>Acceso Directo</div>
-                  <Link href={`/components`}>
-                    <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
-                    duration-[70ms] '>Componentes</button>
-                  </Link>
-              
-                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
-                  duration-[70ms] '>Almacenes</button>
+                  <div className='flex flex-col items-center justify-center h-full'>
+                      <CreateComponent></CreateComponent>
+                  </div>
+                  
+                  <div className='flex flex-col items-center justify-center h-full'>
+                      <CreateStore></CreateStore>
+                  </div>
              
-                  <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
-                  duration-[70ms] '>Suplidores</button>
+                  <div className='flex flex-col items-center justify-center h-full'>
+                      <CreateSupplier></CreateSupplier>
+                  </div>
                
                   <button className='w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
                   duration-[70ms] '>Solicitar Disponibilidad</button>

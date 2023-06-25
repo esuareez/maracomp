@@ -15,9 +15,7 @@ export default function Navbar() {
   const [estado, setEstado] = useState('hidden');
   // Extraemos el pathname para saber en qué ventana estamos.
     const pathname = usePathname();
-    console.log(pathname)
     const router = useRouter();
-    console.log(router)
   
   return (
         

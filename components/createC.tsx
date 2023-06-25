@@ -1,8 +1,5 @@
 "use client";
-import { get } from 'http';
-import Link from 'next/link';
 import React, { use } from 'react'
-import { useState, useRef } from 'react';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
@@ -11,9 +8,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default async function CreateComponent() {
-    
-    const success = () => toast("Componente creado exitosamente");
-    const fail = () => toast("Hubo un error creando el componente");
     
     const {data : suppliers } = await axios.get('https://api-maracomp-production-864a.up.railway.app/supplier');
     let status : any  = 0;
@@ -57,13 +51,13 @@ export default async function CreateComponent() {
     return (
     <Popup
         trigger={
-        <button className='h-3/6 w-10/12 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]'>Crear Componente</button>
+        <button className='h-3/6 w-11/12 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]'>Crear Componente</button>
         }
         modal
         nested
     >
         {(close) => (
-        <form className='w-full' method='POST' onSubmit={handleSubmit}>
+        <form method='POST' onSubmit={handleSubmit}>
             <div className='w-11/12 h-5/6 m-10 '>
             <div className='border-b border-gray-900/10 pb-12'>
                 <h2 className='font-bold text-3xl text-black'>Componente</h2>
@@ -221,7 +215,7 @@ export default async function CreateComponent() {
                 <button
                 type='submit'
                 className='rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
-                onClick={notify}>
+                >
                 Guardar
                 </button>
                 <ToastContainer />
