@@ -58,13 +58,14 @@ export default function CreateComponent() {
   return (
     <Popup
       trigger={
-        <button className="h-3/6 w-11/12 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]">
+        <button className="h-3/6 w-full p-4 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]">
           Crear Componente
         </button>
       }
       modal
       nested
     >
+      {/* @ts-ignore */}
       {(close) => (
         <form method="POST" onSubmit={handleSubmit}>
           <div className="w-11/12 h-5/6 m-10 ">

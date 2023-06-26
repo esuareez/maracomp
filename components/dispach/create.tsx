@@ -10,14 +10,18 @@ import {
   Bars3Icon,
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { clone } from "chart.js/dist/helpers/helpers.core";
 
 export default function CreateDispach() {
   const [components, setComponents] = useState<any[]>([]);
-  const [selectedComponent, setSelectedComponent] = useState<any>([]);
+  const [selectedComponents, setSelectedComponents] = useState<any>([]);
+  const [maxQuantity, setMaxQuantity] = useState<any>(0);
   const [_store, setStore] = useState<any>([]);
   const [activeStore, setActiveStore] = useState<any>([]);
+  const [activeComponent, setActiveComponent] = useState<any>();
+  const [defaultOption, setDefaultOption] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
@@ -45,16 +49,26 @@ export default function CreateDispach() {
   });
 
   const getStores = (event: any) => {
-    const selectedComponent = components.find(
+    setDefaultOption(true);
+    const selectedComponents = components.find(
       (component: any) => component._id === event.target.value
     );
-    console.log(selectedComponent.description);
+    setActiveComponent(selectedComponents);
     const activeSt = _store.filter((store: any) => {
-      return selectedComponent.store.some(
-        (item: any) => item.store === store._id
+      return selectedComponents.store.some(
+        (item: any) => item.store === store._id && item.balance > 0
       );
     });
     setActiveStore(activeSt);
+  };
+
+  const setSelectedStore = (event: any) => {
+    setDefaultOption(false);
+    const storeId = event.target.value;
+    const store = activeComponent.store.find(
+      (store: any) => store.store === storeId
+    );
+    setMaxQuantity(store.balance);
   };
 
   const handleSubmitComponent = (e: any) => {
@@ -65,21 +79,42 @@ export default function CreateDispach() {
       storeId: store.value,
       quantity: Number(balance.value),
     };
-    const sc = selectedComponent.find((item: any) => {
-      item.componentId === data.componentId && item.storeId === data.storeId
-        ? (item.quantity += data.quantity)
-        : data;
-    });
-    setSelectedComponent([sc, ...selectedComponent]);
+    const existingComponent = selectedComponents.find(
+      (item: any) =>
+        item.componentId === data.componentId && item.storeId === data.storeId
+    );
+    if (existingComponent) {
+      const updatedSelectedComponent = selectedComponents.map((item: any) =>
+        item.componentId === data.componentId && item.storeId === data.storeId
+          ? { ...item, quantity: item.quantity + data.quantity }
+          : item
+      );
+      setSelectedComponents(updatedSelectedComponent);
+    } else {
+      setSelectedComponents([data, ...selectedComponents]);
+    }
+  };
+
+  const postSelectedComponents = async () => {
+    const data = {
+      detail: selectedComponents,
+    };
+    const res = await axios.post(
+      `https://api-maracomp-production-864a.up.railway.app/dispach`,
+      data
+    );
+    res.status === 201
+      ? toast.success("Se han despachado los componentes!")
+      : toast.error("Ha ocurrido un error");
   };
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
-  const currentComponents = selectedComponent.slice(
+  const currentComponents = selectedComponents.slice(
     indexOfFirstComponent,
     indexOfLastComponent
   );
-  const pageNumbers = Math.ceil(selectedComponent.length / componentsPerPage);
+  const pageNumbers = Math.ceil(selectedComponents.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -87,7 +122,7 @@ export default function CreateDispach() {
   return (
     <Popup
       trigger={
-        <button className="h-3/6 w-11/12 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]">
+        <button className="h-3/6 w-full p-4 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]">
           Despachar Componentes
         </button>
       }
@@ -122,6 +157,9 @@ export default function CreateDispach() {
                         className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                         onChange={getStores}
                       >
+                        <option disabled selected value="">
+                          SELECCIONA COMPONENTE
+                        </option>
                         {components.map((component) => (
                           <option
                             key={component._id}
@@ -148,7 +186,15 @@ export default function CreateDispach() {
                         name="store"
                         autoComplete="store"
                         className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        onChange={setSelectedStore}
                       >
+                        <option
+                          disabled
+                          selected={defaultOption != true ? false : true}
+                          value=""
+                        >
+                          SELECCIONA ALMACEN
+                        </option>
                         {activeStore.map((store: any) => (
                           <option key={store._id} value={store._id}>
                             {`${store.description}`}
@@ -171,6 +217,7 @@ export default function CreateDispach() {
                         name="balance"
                         type="Number"
                         min={1}
+                        max={maxQuantity}
                         defaultValue={1}
                         pattern={`[0-9]*`}
                         autoComplete="balance"
@@ -195,16 +242,19 @@ export default function CreateDispach() {
               {/* TABLA DE COMPONENTES SELECCIONADOS PARA DESPACHAR */}
 
               <div className="h-4/6 w-full flex flex-col justify-center items-center rounded-[10px]">
-                <div className="overflow-x-auto w-10/12 h-full">
-                  <table className={`table text-black`}>
+                <div className="overflow-x-auto w-full h-full mt-6">
+                  <table className={`table table-fixed text-black`}>
                     {/* head */}
                     <thead>
-                      <tr>
+                      <tr className="border-transparent">
                         <th className="col-span-6 text-black font-bold text-lg ">
                           Componente
                         </th>
                         <th className="col-span-2 text-black font-bold text-lg ">
-                          Unidad
+                          Almacén
+                        </th>
+                        <th className="col-span-4 text-black font-bold text-lg ">
+                          Cantidad
                         </th>
                         <th className="col-span-4 text-black font-bold text-lg ">
                           Acción
@@ -215,10 +265,32 @@ export default function CreateDispach() {
                       {/* body */}
                       {currentComponents.map(
                         (component: any, index: number) => (
-                          <tr key={index}>
-                            <th>{component.componentId}</th>
-                            <th>{component.storeId}</th>
-                            <th>{component.quantity}</th>
+                          <tr key={index} className="border-transparent ">
+                            <td>
+                              {
+                                components.find(
+                                  (comp) => comp._id === component.componentId
+                                )?.description
+                              }
+                            </td>
+                            <td>
+                              {
+                                activeStore.find(
+                                  (store: any) =>
+                                    store._id === component.storeId
+                                )?.description
+                              }
+                            </td>
+                            <td>{component.quantity}</td>
+                            <td>
+                              <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md">
+                                <TrashIcon
+                                  className="
+                                  w-6
+                                  text-white"
+                                />
+                              </button>
+                            </td>
                           </tr>
                         )
                       )}
@@ -227,7 +299,7 @@ export default function CreateDispach() {
                 </div>
                 <div className="flex items-end">
                   {/* Agregar los botones de paginación aquí */}
-                  {selectedComponent.length > componentsPerPage && (
+                  {selectedComponents.length > componentsPerPage && (
                     <div className="flex flex-row">
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
@@ -241,7 +313,7 @@ export default function CreateDispach() {
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={
-                          indexOfLastComponent >= selectedComponent.length
+                          indexOfLastComponent >= selectedComponents.length
                         }
                       >
                         <ChevronDoubleRightIcon className="h-6 w-6 text-black hover:text-gray-500" />
@@ -256,7 +328,7 @@ export default function CreateDispach() {
                 type="button"
                 className="text-sm font-semibold leading-6 text-gray-900"
                 onClick={() => {
-                  setSelectedComponent([]);
+                  setSelectedComponents([]);
                   close();
                 }}
               >
@@ -265,11 +337,13 @@ export default function CreateDispach() {
               <button
                 type="button"
                 className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={postSelectedComponents}
               >
                 Guardar
               </button>
             </div>
           </div>
+          <ToastContainer></ToastContainer>
         </>
       )}
     </Popup>
