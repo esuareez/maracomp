@@ -41,7 +41,7 @@ export default function Page() {
   };
   return (
     <div className="relative bg-gray-700 w-full min-h-[90%] flex items-center justify-center">
-      <div className={`w-10/12 h-4/6 bg-white rounded-[10px]`}>
+      <div className={`w-10/12 sm:h-5/6 md:4/6 bg-white rounded-[10px]`}>
         <div className="">
           <div className="grid grid-cols-12">
             <div className="col-span-8 p-10">
@@ -63,8 +63,8 @@ export default function Page() {
           </div>
         </div>
       
-        <div className="h-full w-full flex flex-cols justify-center items-center rounded-[10px]">
-          <div className="overflow-x-auto w-10/12 h-5/6">
+        <div className="h-4/6 w-full flex flex-col justify-center items-center rounded-[10px]">
+          <div className="overflow-x-auto w-10/12 h-full">
             <table className={`table text-black`}>
               {/* head */}
               <thead>
@@ -93,11 +93,10 @@ export default function Page() {
               </tbody>
             </table>
           </div>
-          <div className="flex justify-end">
+          <div className="flex items-end">
                 {/* Agregar los botones de paginación aquí */}
                 {components.length > componentsPerPage && (
-                  <div>
-                    
+                  <div className="flex flex-row">
                     <button
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}

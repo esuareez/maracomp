@@ -139,12 +139,9 @@ export default function Home() {
                 Solicitar Disponibilidad
               </button>
 
-              <button
-                className="w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
-                  duration-[70ms] "
-              >
+              <div className="flex flex-col items-center justify-center h-full">
                 <CreateDispach></CreateDispach>
-              </button>
+              </div>
             </div>
           </div>
         </div>
