@@ -74,7 +74,7 @@ export default function CreateStore() {
                     >
                       {components.map((component) => (
                         <option key={component._id} value={component._id}>
-                          {component.description}
+                          {`${component.description} - ${component.unit}`}
                         </option>
                       ))}
                     </select>

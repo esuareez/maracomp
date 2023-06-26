@@ -11,6 +11,7 @@ import Link from "next/link";
 import CreateComponent from "@/components/createC";
 import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
+import CreateDispach from "@/components/dispach/create";
 
 metadata.title = "MaraComp | Inicio";
 export default function Home() {
@@ -142,7 +143,7 @@ export default function Home() {
                 className="w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
                   duration-[70ms] "
               >
-                Despachar Componentes
+                <CreateDispach></CreateDispach>
               </button>
             </div>
           </div>

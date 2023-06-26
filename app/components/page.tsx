@@ -9,12 +9,13 @@ import "reactjs-popup/dist/index.css";
 import { metadata } from "../layout";
 import axios from "axios";
 import { UserCircleIcon, Bars3Icon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
+import CreateStore from "@/components/store/create";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
-  const [componentsPerPage] = useState(6);
+  const [componentsPerPage, setComponentsPerPage] = useState(6);
   const [components, setComponents] = useState<any[]>([]);
 
   useEffect(() => {
@@ -26,45 +27,51 @@ export default function Page() {
     };
     fetchComponents();
   }, []);
-
+  
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
   const currentComponents = components.slice(
     indexOfFirstComponent,
     indexOfLastComponent
   );
+  const pageNumbers = components.length / componentsPerPage;
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
   return (
-    <div className="relative bg-gray-700 w-full min-h-[90%] flex flex-grow items-center justify-center">
-      <div className={`w-11/12 h-5/6 bg-white rounded-[10px] grid grid-rows`}>
-        <div className="row-span-1">
+    <div className="relative bg-gray-700 w-full min-h-[90%] flex items-center justify-center">
+      <div className={`w-10/12 h-4/6 bg-white rounded-[10px]`}>
+        <div className="">
           <div className="grid grid-cols-12">
-            <div className="col-span-10 p-10">
+            <div className="col-span-8 p-10">
               <h2 className="font-bold text-3xl text-black">Componentes</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Componentes registrados en el almacén.
               </p>
             </div>
             <div className="col-span-2">
-              <div className="flex flex-col items-center justify-center h-full">
+              <div className="flex flex-col items-end justify-center h-5/6 w-10/12 pt-10 gap-y-2">
                 <CreateComponent></CreateComponent>
+              </div>
+            </div>
+            <div className="col-span-2">
+              <div className="flex flex-col items-start justify-center h-5/6 w-10/12 pt-10">
+                <CreateStore></CreateStore>
               </div>
             </div>
           </div>
         </div>
-        <div className="row-span-5 bg-pink-300 h-full w-full">
-          <div className="overflow-x-auto">
-            <table className="table text-black font-bold">
+      
+        <div className="h-full w-full flex flex-cols justify-center items-center rounded-[10px]">
+          <div className="overflow-x-auto w-10/12 h-5/6">
+            <table className={`table text-black`}>
               {/* head */}
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Componente</th>
-                  <th>Unidad</th>
-                  <th>Acción</th>
+                  <th className="col-span-6 text-black font-bold text-lg ">Componente</th>
+                  <th className="col-span-2 text-black font-bold text-lg ">Unidad</th>
+                  <th className="col-span-4 text-black font-bold text-lg ">Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,36 +84,38 @@ export default function Page() {
                 ) : (
                   currentComponents.map((component, index) => (
                     <tr key={index}>
-                        <td></td>
-                        <td>{component.description}</td>
-                        <td>{component.unit}</td>
-                        <td></td>
+                        <td className="text-ellipsis col-span-6 w-6/12">{component.description}</td>
+                        <td className="text-ellipsis col-span-2 w-6/12">{component.unit}</td>
+                        <td className="col-span-4 w-6/12"></td>
                     </tr>
                   ))
                 )}
               </tbody>
             </table>
-            <div>
-              {/* Agregar los botones de paginación aquí */}
-              {components.length > componentsPerPage && (
-                <div>
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronDoubleLeftIcon className="h-6 w-6 text-gray-400 hover:text-white" />
-                  </button>
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={indexOfLastComponent >= components.length}
-                  >
-                    <ChevronDoubleRightIcon className="h-6 w-6 text-gray-400 hover:text-white" />
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
+          <div className="flex justify-end">
+                {/* Agregar los botones de paginación aquí */}
+                {components.length > componentsPerPage && (
+                  <div>
+                    
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronDoubleLeftIcon className="h-6 w-6 text-black hover:text-gray-500" />
+                    </button>
+                    <p className="text-black font-medium">{currentPage}/{pageNumbers}</p>
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={indexOfLastComponent >= components.length}
+                    >
+                      <ChevronDoubleRightIcon className="h-6 w-6 text-black hover:text-gray-500" />
+                    </button>
+                  </div>
+                )}
+              </div>
         </div>
+        
       </div>
     </div>
   );

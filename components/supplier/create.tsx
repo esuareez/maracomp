@@ -23,6 +23,11 @@ export default function CreateSupplier() {
 
         const res = await axios.post(`https://api-maracomp-production-864a.up.railway.app/supplier`, data)
         console.log(res)
+
+        name.value = ''
+        rnc.value = ''
+        ciudad.value = ''
+        direccion.value = ''
     }
 
   return (

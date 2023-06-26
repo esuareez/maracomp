@@ -55,10 +55,6 @@ export default function CreateComponent() {
     event.target.discount.value = "";
   };
 
-  const notify = () => {
-    if (status === 201) toast("Componente creado exitosamente");
-  };
-
   return (
     <Popup
       trigger={
@@ -237,7 +233,7 @@ export default function CreateComponent() {
                         type="Number"
                         min={0}
                         defaultValue={0}
-                        autoComplete="email"
+                        autoComplete="deliveryTimeInDays"
                         className="block w-5/6  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
                     </div>
@@ -259,7 +255,6 @@ export default function CreateComponent() {
               >
                 Guardar
               </button>
-              <ToastContainer />
             </div>
           </div>
         </form>
