@@ -126,7 +126,7 @@ export default function ViewSupplierTime({ componentId }: any) {
                           <td>{supplier.deliveryTimeInDays}</td>
                           <td>{supplier.price}</td>
                           <td>{supplier.discount}</td>
-                          <td>{supplier.status}</td>
+                          <td>{supplier.state}</td>
                         </tr>
                       ))}
                     </tbody>
