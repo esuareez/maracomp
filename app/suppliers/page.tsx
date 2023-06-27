@@ -24,7 +24,8 @@ export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(6);
-  const [suppliers, setSuppliers] = useState<any[]>([]);
+    const [suppliers, setSuppliers] = useState<any[]>([]);
+  
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -36,13 +37,14 @@ export default function Page() {
     fetchComponents();
   }, []);
 
+    
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
   const currentComponents = suppliers.slice(
     indexOfFirstComponent,
     indexOfLastComponent
   );
-  const pageNumbers = suppliers.length / componentsPerPage;
+  const pageNumbers = Math.ceil(suppliers.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -73,7 +75,7 @@ export default function Page() {
                   <th className=" text-black font-bold text-lg ">Nombre</th>
                   <th className=" text-black font-bold text-lg ">RNC</th>
                   <th className=" text-black font-bold text-lg ">Ciudad</th>
-                  <th className=" text-black font-bold text-lg ">Direccion</th>
+                  <th className=" text-black font-bold text-lg ">Dirección</th>
                   <th className=" text-black font-bold text-lg text-right">
                     Acción
                   </th>

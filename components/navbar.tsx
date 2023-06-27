@@ -74,14 +74,14 @@ export default function Navbar() {
                 Suplidores
               </Link>
               <Link
-                href="/inventory"
+                href="/orders"
                 className={`  ${
-                  usePathname() === "/inventory"
+                  usePathname() === "/orders"
                     ? styles.current
                     : styles.inactive
                 }`}
               >
-                Inventario
+                Ordenes
               </Link>
             </div>
           </div>
