@@ -18,6 +18,8 @@ import { clone } from "chart.js/dist/helpers/helpers.core";
 import { StateContext } from "../context/mainData";
 
 export default function ViewSupplierTime({ componentId }: any) {
+  const [toggleStates, setToggleStates] = useState<any>({});
+
   const { components, setComponents } = useContext<any>(StateContext);
   const { supplierTime, setSupplierTime } = useContext<any>(StateContext);
   const [supplierTimeOfComponent, setSupplierTimeOfComponent] = useState<any>(
@@ -27,12 +29,6 @@ export default function ViewSupplierTime({ componentId }: any) {
     useContext<any>(StateContext);
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
-  const [maxQuantity, setMaxQuantity] = useState<any>(0);
-  const { stores, setStores } = useContext<any>(StateContext);
-  const [activeStore, setActiveStore] = useState<any>([]);
-  const [activeComponent, setActiveComponent] = useState<any>();
-  const [defaultStore, setDefaultStore] = useState(true);
-  const [defaultOption, setDefaultOption] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
@@ -43,7 +39,17 @@ export default function ViewSupplierTime({ componentId }: any) {
       (supTime: any) => supTime.componentId === componentId
     );
     setSupplierTimeOfComponent(allSupTime);
-    console.log(supplierTimeOfComponent);
+    // Asignar valores iniciales al estado toggleStates
+    const initialState = allSupTime.reduce(
+      (state: any, supplier: any, index: number) => {
+        return {
+          ...state,
+          [index]: supplier.state,
+        };
+      },
+      {}
+    );
+    setToggleStates(initialState);
   }, []);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
@@ -64,11 +70,7 @@ export default function ViewSupplierTime({ componentId }: any) {
     <Popup
       trigger={
         <button className="bg-verde hover:bg-verdeOscuro duration-300 p-3 rounded-md">
-          <EyeIcon
-            className="
-                                  w-6
-                                  text-white"
-          />
+          <EyeIcon className="w-6 text-white" />
         </button>
       }
       modal
@@ -90,7 +92,7 @@ export default function ViewSupplierTime({ componentId }: any) {
 
               <div className="h-4/6 w-full flex flex-col justify-center items-center rounded-[10px]">
                 <div className="overflow-x-auto w-full h-full mt-6">
-                  <table className={`table table-fixed text-black`}>
+                  <table className={`table text-black`}>
                     {/* head */}
                     <thead>
                       <tr className="border-transparent">
@@ -99,7 +101,6 @@ export default function ViewSupplierTime({ componentId }: any) {
                         </th>
                         <th className="col-span-2 text-black font-bold text-lg ">
                           Tiempo de entrega
-                          <p className="text-gray-500">(en días)</p>
                         </th>
                         <th className="col-span-4 text-black font-bold text-lg ">
                           Precio
@@ -126,7 +127,42 @@ export default function ViewSupplierTime({ componentId }: any) {
                           <td>{supplier.deliveryTimeInDays}</td>
                           <td>{supplier.price}</td>
                           <td>{supplier.discount}</td>
-                          <td>{supplier.state}</td>
+                          <td>
+                            {supplier.state}
+                            <label
+                              htmlFor={`toggle-${index}`}
+                              className="flex items-center cursor-pointer"
+                            >
+                              <div className="relative">
+                                <input
+                                  type="checkbox"
+                                  id={`toggle-${index}`}
+                                  className="sr-only"
+                                  checked={toggleStates[index]}
+                                  onChange={(e) => {
+                                    setToggleStates((prevState: any) => ({
+                                      ...prevState,
+                                      [index]: e.target.checked,
+                                    }));
+                                  }}
+                                />
+                                <div
+                                  className={`block ${
+                                    toggleStates[index]
+                                      ? "bg-green-600"
+                                      : "bg-red-600"
+                                  } w-14 h-8 rounded-full`}
+                                ></div>
+                                <div
+                                  className={`dot absolute left-1 top-1 bg-gray-200 w-6 h-6 rounded-full transition ${
+                                    toggleStates[index]
+                                      ? "translate-x-6 bg-white"
+                                      : "translate-x-1 bg-white"
+                                  }`}
+                                ></div>
+                              </div>
+                            </label>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
