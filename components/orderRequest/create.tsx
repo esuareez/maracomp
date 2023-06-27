@@ -14,7 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { clone } from "chart.js/dist/helpers/helpers.core";
 
-export default function CreateDispach() {
+export default function CreateOrderRequest() {
   const [components, setComponents] = useState<any[]>([]);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
   const [maxQuantity, setMaxQuantity] = useState<any>(0);
@@ -22,7 +22,8 @@ export default function CreateDispach() {
   const [activeStore, setActiveStore] = useState<any>([]);
   const [activeComponent, setActiveComponent] = useState<any>();
   const [defaultStore, setDefaultStore] = useState(true);
-  const [defaultOption, setDefaultOption] = useState(true);
+    const [defaultOption, setDefaultOption] = useState(true);
+    const [_date, setDate] = useState<Date>();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
@@ -57,34 +58,35 @@ export default function CreateDispach() {
     setActiveComponent(selectedComponents);
     const activeSt = _store.filter((store: any) => {
       return selectedComponents.store.some(
-        (item: any) => item.store === store._id && item.balance > 0
+        (item: any) => item.store === store._id
       );
     });
     setActiveStore(activeSt);
   };
 
-  const setSelectedStore = (event: any) => {
+  const setSelectedStore = () => {
     setDefaultOption(false);
     setDefaultStore(false);
-    const storeId = event.target.value;
-    const store = activeComponent.store.find(
-      (store: any) => store.store === storeId
-    );
-    setMaxQuantity(store.balance);
   };
 
   const handleSubmitComponent = (e: any) => {
     e.preventDefault();
-    const { component, store, balance } = e.target.elements;
-    const data = {
+    const { component, store, balance, date } = e.target.elements;
+    const _unit = components.find((comp) => comp._id === component.value);
+      const data = {
       componentId: component.value,
       storeId: store.value,
       quantity: Number(balance.value),
-    };
+      unit: _unit.unit,
+      };
+      setDate(date.value)
     const existingComponent = selectedComponents.find(
+        
       (item: any) =>
         item.componentId === data.componentId && item.storeId === data.storeId
-    );
+      );
+      
+    
     if (existingComponent) {
       const updatedSelectedComponent = selectedComponents.map((item: any) =>
         item.componentId === data.componentId && item.storeId === data.storeId
@@ -97,12 +99,15 @@ export default function CreateDispach() {
     }
   };
 
-  const postSelectedComponents = async () => {
-    const data = {
+    const postSelectedComponents = async () => {
+      const dateISO = _date ? new Date(_date).toISOString().split('T')[0] : null
+      const data = {
+          date: dateISO,
       detail: selectedComponents,
-    };
+      };
+      console.log(data)
     const res = await axios.post(
-      `https://api-maracomp-production-864a.up.railway.app/dispach`,
+      `https://api-maracomp-production-864a.up.railway.app/orderRequest`,
       data
     );
     res.status === 201
@@ -130,13 +135,17 @@ export default function CreateDispach() {
   const handleDelete = (index : any) => {
     selectedComponents.splice(index, 1);
     setSelectedComponents([...selectedComponents]);
-  }
+    }
+    
+    const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowISO = tomorrow.toISOString().split('T')[0]
 
   return (
     <Popup
       trigger={
         <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
-          Despachar Componentes
+          Generar Orden
         </button>
       }
       modal
@@ -148,10 +157,10 @@ export default function CreateDispach() {
           <div className="w-11/12 h-5/6 m-10 ">
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="font-bold text-3xl text-black">
-                Despachar Componentes
+                Orden Requerida
               </h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Agrega los componentes y la cantidad que desea despachar.
+                Agrega los componentes y la cantidad requerida para la fecha asignada.
               </p>
               <form id="form" onSubmit={handleSubmitComponent}>
                 <div className="mt-10 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-6">
@@ -224,7 +233,7 @@ export default function CreateDispach() {
                       htmlFor="balance"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Cantidad a despachar
+                      Cantidad Requerida
                     </label>
                     <div className="mt-2">
                       <input
@@ -232,7 +241,6 @@ export default function CreateDispach() {
                         name="balance"
                         type="Number"
                         min={1}
-                        max={maxQuantity}
                         defaultValue={1}
                         pattern={`[0-9]*`}
                         autoComplete="balance"
@@ -240,7 +248,62 @@ export default function CreateDispach() {
                       />
                     </div>
                   </div>
-                  <div className="sm:col-span-2">
+                  
+                <div className="sm:col-span-2">
+                    <label
+                      htmlFor="balance"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Fecha
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="date"
+                        name="date"
+                        type="date"
+                        min={tomorrowISO}
+                        autoComplete="balance"
+                        className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                </div>    
+                <div className="sm:col-span-2">
+                    <label
+                      htmlFor="balance"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Prioridad de la Orden
+                    </label>
+                    <div className="mt-2">
+                      <select
+                        required
+                        id="priority"
+                        name="priority"
+                        autoComplete="priority"
+                        className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      >
+                        <option
+                          disabled
+                          selected={defaultStore != true ? false : true}
+                          value=""
+                        >
+                          SELECCIONA PRIORIDAD
+                        </option>
+                        <option
+                          value="BARATO"
+                        >
+                          Barato
+                        </option>
+                        <option
+                          value="RAPIDO"
+                        >
+                          Entrega Rápida
+                        </option>
+                        
+                      </select>
+                    </div>
+                  </div>                          
+                <div className="sm:col-span-2">
                     <button
                       type="submit"
                       className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white 

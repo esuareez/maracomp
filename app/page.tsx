@@ -12,6 +12,7 @@ import CreateComponent from "@/components/createC";
 import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
 import CreateDispach from "@/components/dispach/create";
+import CreateOrderRequest from "@/components/orderRequest/create";
 
 metadata.title = "MaraComp | Inicio";
 export default function Home() {
@@ -132,12 +133,9 @@ export default function Home() {
                 <CreateSupplier></CreateSupplier>
               </div>
 
-              <button
-                className="w-full text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold p-5 rounded-[10px]
-                  duration-[70ms] "
-              >
-                Solicitar Disponibilidad
-              </button>
+              <div className="flex flex-col items-center justify-center h-full">
+                <CreateOrderRequest></CreateOrderRequest>
+              </div>
 
               <div className="flex flex-col items-center justify-center h-full">
                 <CreateDispach></CreateDispach>

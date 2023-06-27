@@ -58,7 +58,7 @@ export default function CreateComponent() {
   return (
     <Popup
       trigger={
-        <button className="h-3/6 w-full p-4 text-white bg-verde hover:bg-verdeOscuro rounded-[10px]">
+        <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
           Crear Componente
         </button>
       }
