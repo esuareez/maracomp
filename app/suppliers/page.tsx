@@ -13,27 +13,37 @@ import {
   Bars3Icon,
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
-  PencilSquareIcon,
   TrashIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
+import CreateSupplier from "@/components/supplier/create";
 import { StateContext } from "@/components/context/mainData";
-import ViewSupplierTime from "@/components/component/view";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(5);
-  const { components, setComponents } = useContext<any>(StateContext);
+  const { suppliers, setSuppliers } = useContext<any>(StateContext);
+
+  // useEffect(() => {
+  //   const fetchComponents = async () => {
+  //     const { data } = await axios.get(
+  //       "https://api-maracomp-production-864a.up.railway.app/supplier"
+  //     );
+  //     setSuppliers(data);
+  //   };
+  //   fetchComponents();
+  // }, []);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
-  const currentComponents = components.slice(
+  const currentComponents = suppliers.slice(
     indexOfFirstComponent,
     indexOfLastComponent
   );
-  const pageNumbers = Math.ceil(components.length / componentsPerPage);
+  const pageNumbers = Math.ceil(suppliers.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -43,21 +53,14 @@ export default function Page() {
       <div className={`w-10/12 sm:h-5/6 md:4/6 bg-white rounded-[10px]`}>
         <div className="flex flex-row w-full px-20 py-10 justify-between">
           <div>
-            <h2 className="font-bold text-3xl text-black">Componentes</h2>
+            <h2 className="font-bold text-3xl text-black">Suplidores</h2>
             <p className="mt-1 text-sm leading-6 text-gray-600">
-              Componentes registrados en el almacén.
+              Suplidores registrados en la empresa.
             </p>
           </div>
-          <div className="flex flex-row space-x-4">
+          <div>
             <div>
-              <div>
-                <CreateComponent></CreateComponent>
-              </div>
-            </div>
-            <div>
-              <div>
-                <CreateStore></CreateStore>
-              </div>
+              <CreateSupplier></CreateSupplier>
             </div>
           </div>
         </div>
@@ -68,9 +71,10 @@ export default function Page() {
               {/* head */}
               <thead>
                 <tr className="border-transparent">
-                  <th className=" text-black font-bold text-lg ">Código</th>
-                  <th className=" text-black font-bold text-lg ">Componente</th>
-                  <th className=" text-black font-bold text-lg ">Unidad</th>
+                  <th className=" text-black font-bold text-lg ">Nombre</th>
+                  <th className=" text-black font-bold text-lg ">RNC</th>
+                  <th className=" text-black font-bold text-lg ">Ciudad</th>
+                  <th className=" text-black font-bold text-lg ">Dirección</th>
                   <th className=" text-black font-bold text-lg text-right">
                     Acción
                   </th>
@@ -86,13 +90,28 @@ export default function Page() {
                 ) : (
                   currentComponents.map((component: any, index: any) => (
                     <tr key={index} className="border-transparent">
-                      <td className="text-ellipsis ">{component.code}</td>
-                      <td className="text-ellipsis ">
-                        {component.description}
-                      </td>
-                      <td className="text-ellipsis ">{component.unit}</td>
-                      <td className="flex flex-row space-x-4 justify-end items-center">
-                        <ViewSupplierTime componentId={component._id} />
+                      <td className="text-ellipsis">{component.name}</td>
+                      <td className="text-ellipsis">{component.rnc}</td>
+                      <td className="text-ellipsis">{component.ciudad}</td>
+                      <td className="text-ellipsis ">{component.direccion}</td>
+                      <td className="flex flex-row  space-x-4 justify-end items-center">
+                        {/* <button className="bg-orange-500 hover:bg-orange-600 duration-300 p-3 rounded-md">
+                          <PencilSquareIcon
+                            className="
+                                  w-6
+                                  text-white"
+                          />
+                        </button> */}
+
+                        <CreateSupplier supplierId={component._id} />
+
+                        <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md">
+                          <TrashIcon
+                            className="
+                                  w-6
+                                  text-white"
+                          />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -102,7 +121,7 @@ export default function Page() {
           </div>
           <div className="flex items-end">
             {/* Agregar los botones de paginación aquí */}
-            {components.length > componentsPerPage && (
+            {suppliers.length > componentsPerPage && (
               <div className="flex flex-row">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -115,7 +134,7 @@ export default function Page() {
                 </p>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={indexOfLastComponent >= components.length}
+                  disabled={indexOfLastComponent >= suppliers.length}
                 >
                   <ChevronDoubleRightIcon className="h-6 w-6 text-black hover:text-gray-500" />
                 </button>
