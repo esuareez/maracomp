@@ -36,14 +36,19 @@ export default function Page() {
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
   const { stores, setStores } = useContext<any>(StateContext);
   const { components, setComponents } = useContext<any>(StateContext);
+  const [filteredData, setFilteredData] = useState<any>([]);
+
+  useEffect(() => {
+    setFilteredData(inventorymovement);
+  }, [inventorymovement]);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
-  const currentOrders = inventorymovement.slice(
+  const currentOrders = filteredData.slice(
     indexOfFirstComponent,
     indexOfLastComponent
   );
-  const pageNumbers = Math.ceil(inventorymovement.length / componentsPerPage);
+  const pageNumbers = Math.ceil(filteredData.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -53,6 +58,16 @@ export default function Page() {
     const date = new Date(dateString);
     const formattedDate = date.toLocaleDateString();
     return formattedDate;
+  };
+
+  const handleFilter = (event: any) => {
+    const tipo = event.target.value;
+    if (tipo === "TODOS") {
+      setFilteredData(inventorymovement); // Mostrar todos los datos sin filtrar
+    } else {
+      const data = inventorymovement.filter((item: any) => item.type === tipo);
+      setFilteredData(data);
+    }
   };
 
   return (
@@ -67,9 +82,28 @@ export default function Page() {
               Entrada y salida de los componentes del inventario.
             </p>
           </div>
-          <div>
+          <div className="flex flex-col space-y-4">
             <div>
-              <CreateDispach></CreateDispach>
+              <div className="">
+                <CreateDispach></CreateDispach>
+              </div>
+            </div>
+            <div>
+              <select
+                required
+                id="store"
+                name="store"
+                autoComplete="store"
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                onChange={handleFilter}
+              >
+                <option disabled selected value="">
+                  FILTRAR POR TIPO
+                </option>
+                <option value={"ENTRADA"}>ENTRADA</option>
+                <option value={"SALIDA"}>SALIDA</option>
+                <option value={"TODOS"}>TODOS</option>
+              </select>
             </div>
           </div>
         </div>
@@ -150,7 +184,7 @@ export default function Page() {
           </div>
           <div className="flex items-end">
             {/* Agregar los botones de paginación aquí */}
-            {inventorymovement.length > componentsPerPage && (
+            {filteredData.length > componentsPerPage && (
               <div className="flex flex-row">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -163,7 +197,7 @@ export default function Page() {
                 </p>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={indexOfLastComponent >= inventorymovement.length}
+                  disabled={indexOfLastComponent >= filteredData.length}
                 >
                   <ChevronDoubleRightIcon className="h-6 w-6 text-black hover:text-gray-500" />
                 </button>
