@@ -1,23 +1,14 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { StateContext } from "../context/mainData";
 
 export default function CreateStore() {
-  const [components, setComponents] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
-      );
-      setComponents(data);
-    };
-    fetchData();
-  }, []);
+  const { components, setComponents } = useContext<any>(StateContext);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -28,14 +19,13 @@ export default function CreateStore() {
       balance: Number(balance.value),
     };
 
-    console.log(data);
-    console.log(component.value);
-
     const res = await axios.post(
       `https://api-maracomp-production-864a.up.railway.app/store/${component.value}`,
       data
     );
-    console.log(res);
+    res.status < 300
+      ? toast.success("¡El suplidor ha sido agregado con éxito!")
+      : toast.error("Ha ocurrido un error tratando de agregar el suplidor");
   };
 
   return (
@@ -73,7 +63,7 @@ export default function CreateStore() {
                       autoComplete="componentn"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                     >
-                      {components.map((component) => (
+                      {components.map((component: any) => (
                         <option key={component._id} value={component._id}>
                           {`${component.description} - ${component.unit}`}
                         </option>
@@ -138,6 +128,7 @@ export default function CreateStore() {
               </button>
             </div>
           </div>
+          <ToastContainer></ToastContainer>
         </form>
       )}
     </Popup>

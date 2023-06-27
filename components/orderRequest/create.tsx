@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
@@ -13,42 +13,22 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { clone } from "chart.js/dist/helpers/helpers.core";
+import { StateContext } from "../context/mainData";
 
 export default function CreateOrderRequest() {
-  const [components, setComponents] = useState<any[]>([]);
+  const { components, setComponents } = useContext<any>(StateContext);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
   const [maxQuantity, setMaxQuantity] = useState<any>(0);
-  const [_store, setStore] = useState<any>([]);
+  const { stores, setStore } = useContext<any>(StateContext);
   const [activeStore, setActiveStore] = useState<any>([]);
   const [activeComponent, setActiveComponent] = useState<any>();
   const [defaultStore, setDefaultStore] = useState(true);
-    const [defaultOption, setDefaultOption] = useState(true);
-    const [_date, setDate] = useState<Date>();
+  const [defaultOption, setDefaultOption] = useState(true);
+  const [_date, setDate] = useState<Date>();
+  const { orders, setOrders } = useContext<any>(StateContext);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
-
-  // Obtener todos los componentes
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
-      );
-      setComponents(data);
-    };
-    fetchData();
-  }, []);
-
-  // Obtener los almacenes de un componente
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        `https://api-maracomp-production-864a.up.railway.app/store`
-      );
-      setStore(data);
-    };
-    fetchData();
-  });
 
   const getStores = (event: any) => {
     setDefaultStore(true);
@@ -56,7 +36,7 @@ export default function CreateOrderRequest() {
       (component: any) => component._id === event.target.value
     );
     setActiveComponent(selectedComponents);
-    const activeSt = _store.filter((store: any) => {
+    const activeSt = stores.filter((store: any) => {
       return selectedComponents.store.some(
         (item: any) => item.store === store._id
       );
@@ -72,21 +52,19 @@ export default function CreateOrderRequest() {
   const handleSubmitComponent = (e: any) => {
     e.preventDefault();
     const { component, store, balance, date } = e.target.elements;
-    const _unit = components.find((comp) => comp._id === component.value);
-      const data = {
+    const _unit = components.find((comp: any) => comp._id === component.value);
+    const data = {
       componentId: component.value,
       storeId: store.value,
       quantity: Number(balance.value),
       unit: _unit.unit,
-      };
-      setDate(date.value)
+    };
+    setDate(date.value);
     const existingComponent = selectedComponents.find(
-        
       (item: any) =>
         item.componentId === data.componentId && item.storeId === data.storeId
-      );
-      
-    
+    );
+
     if (existingComponent) {
       const updatedSelectedComponent = selectedComponents.map((item: any) =>
         item.componentId === data.componentId && item.storeId === data.storeId
@@ -99,25 +77,29 @@ export default function CreateOrderRequest() {
     }
   };
 
-    const postSelectedComponents = async () => {
-      const dateISO = _date ? new Date(_date).toISOString().split('T')[0] : null
-      const data = {
-          date: dateISO,
+  const postSelectedComponents = async () => {
+    const dateISO = _date ? new Date(_date).toISOString().split("T")[0] : null;
+    const data = {
+      date: dateISO,
       detail: selectedComponents,
-      };
-      console.log(data)
+    };
     const res = await axios.post(
       `https://api-maracomp-production-864a.up.railway.app/orderRequest`,
       data
     );
-    res.status === 201
-      ? toast.success("Se han despachado los componentes!")
-      : toast.error("Ha ocurrido un error");
-    
-    setSelectedComponents([]);
-    setDefaultStore(true);
-    setDefaultOption(true);
+    if (res.status < 300) {
+      toast.success("Se ha creado la orden requerida!");
+      setSelectedComponents([]);
+      setDefaultStore(true);
+      setDefaultOption(true);
+      const { data } = await axios.get(
+        `https://api-maracomp-production-864a.up.railway.app/order`
+      );
+      setOrders(data.reverse());
+      return;
+    }
 
+    toast.error("Ha ocurrido un error al crear la orden requerida");
   };
 
   const indexOfLastComponent = currentPage * componentsPerPage;
@@ -132,14 +114,14 @@ export default function CreateOrderRequest() {
     setCurrentPage(pageNumber);
   };
 
-  const handleDelete = (index : any) => {
+  const handleDelete = (index: any) => {
     selectedComponents.splice(index, 1);
     setSelectedComponents([...selectedComponents]);
-    }
-    
-    const tomorrow = new Date();
+  };
+
+  const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowISO = tomorrow.toISOString().split('T')[0]
+  const tomorrowISO = tomorrow.toISOString().split("T")[0];
 
   return (
     <Popup
@@ -156,11 +138,10 @@ export default function CreateOrderRequest() {
         <>
           <div className="w-11/12 h-5/6 m-10 ">
             <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="font-bold text-3xl text-black">
-                Orden Requerida
-              </h2>
+              <h2 className="font-bold text-3xl text-black">Orden Requerida</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Agrega los componentes y la cantidad requerida para la fecha asignada.
+                Agrega los componentes y la cantidad requerida para la fecha
+                asignada.
               </p>
               <form id="form" onSubmit={handleSubmitComponent}>
                 <div className="mt-10 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-6">
@@ -180,10 +161,14 @@ export default function CreateOrderRequest() {
                         className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                         onChange={getStores}
                       >
-                        <option disabled selected={defaultOption != true ? false : true} value="">
+                        <option
+                          disabled
+                          selected={defaultOption != true ? false : true}
+                          value=""
+                        >
                           SELECCIONA COMPONENTE
                         </option>
-                        {components.map((component) => (
+                        {components.map((component: any) => (
                           <option
                             key={component._id}
                             value={component._id}
@@ -248,8 +233,8 @@ export default function CreateOrderRequest() {
                       />
                     </div>
                   </div>
-                  
-                <div className="sm:col-span-2">
+
+                  <div className="sm:col-span-2">
                     <label
                       htmlFor="balance"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -266,8 +251,8 @@ export default function CreateOrderRequest() {
                         className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
                     </div>
-                </div>    
-                <div className="sm:col-span-2">
+                  </div>
+                  <div className="sm:col-span-2">
                     <label
                       htmlFor="balance"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -289,21 +274,12 @@ export default function CreateOrderRequest() {
                         >
                           SELECCIONA PRIORIDAD
                         </option>
-                        <option
-                          value="BARATO"
-                        >
-                          Barato
-                        </option>
-                        <option
-                          value="RAPIDO"
-                        >
-                          Entrega Rápida
-                        </option>
-                        
+                        <option value="BARATO">Barato</option>
+                        <option value="RAPIDO">Entrega Rápida</option>
                       </select>
                     </div>
-                  </div>                          
-                <div className="sm:col-span-2">
+                  </div>
+                  <div className="sm:col-span-2">
                     <button
                       type="submit"
                       className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white 
@@ -347,13 +323,14 @@ export default function CreateOrderRequest() {
                             <td>
                               {
                                 components.find(
-                                  (comp) => comp._id === component.componentId
+                                  (comp: any) =>
+                                    comp._id === component.componentId
                                 )?.description
                               }
                             </td>
                             <td>
                               {
-                                _store.find(
+                                stores.find(
                                   (store: any) =>
                                     store._id === component.storeId
                                 )?.description
@@ -361,7 +338,12 @@ export default function CreateOrderRequest() {
                             </td>
                             <td>{component.quantity}</td>
                             <td>
-                              <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md" onClick={() => { handleDelete(index) }}>
+                              <button
+                                className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
+                                onClick={() => {
+                                  handleDelete(index);
+                                }}
+                              >
                                 <TrashIcon
                                   className="
                                   w-6

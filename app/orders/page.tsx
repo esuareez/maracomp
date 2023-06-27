@@ -2,7 +2,7 @@
 
 import CreateComponent from "@/components/createC";
 import Link from "next/link";
-import { use } from "react";
+import { use, useContext } from "react";
 import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -16,68 +16,91 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
   TrashIcon,
-    PencilSquareIcon,
-  EyeIcon
+  PencilSquareIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
 import CreateOrderRequest from "@/components/orderRequest/create";
 import DetailOrder from "@/components/detailOrder/show";
+import { StateContext } from "@/components/context/mainData";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(5);
-    const [orders, setOrders] = useState<any[]>([]);
-    const [suppliers, setSuppliers] = useState<any[]>([]);
-
+  const { orders, setOrders } = useContext<any>(StateContext);
+  const { suppliers, setSuppliers } = useContext<any>(StateContext);
+  const [ordersInRange, setOrdersInRange] = useState<any>([]);
+  const [dateMinIsSelected, setDateMinIsSelected] = useState<boolean>(false);
+  const [isFiltering, setIsFiltering] = useState<boolean>(false);
+  const [dateMin, setDateMin] = useState<any>(null);
+  const [selectedDateMin, setSelectedDateMin] = useState<any>("");
+  const [selectedDateMax, setSelectedDateMax] = useState<any>("");
   useEffect(() => {
-    const fetchComponents = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/order"
-      );
-      setOrders(data);
-    };
-    fetchComponents();
-  }, []);
-    
-    useEffect(() => {
-    const fetchComponents = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/supplier"
-      );
-      setSuppliers(data);
-    };
-    fetchComponents();
+    setDateMin(new Date());
   }, []);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
-  const currentOrders = orders.slice(
-    indexOfFirstComponent,
-    indexOfLastComponent
-  );
-  const pageNumbers = Math.ceil(orders.length / componentsPerPage);
+  const currentOrders =
+    isFiltering != true
+      ? orders.slice(indexOfFirstComponent, indexOfLastComponent)
+      : ordersInRange.slice(indexOfFirstComponent, indexOfLastComponent);
+  const pageNumbers = Math.ceil(ordersInRange.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
-      setCurrentPage(pageNumber);
-    };
-    
-    const formatDate = (dateString : any) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const formatDate = (dateString: any) => {
     const date = new Date(dateString);
+    console.log(dateString);
     const formattedDate = date.toLocaleDateString();
     return formattedDate;
-    }
+  };
 
-    const handleDelete = async (code: any, index: number) => {
-        const res = await axios.delete(`https://api-maracomp-production-864a.up.railway.app/detailorder/${code}`);
-        res.status < 300
+  const handleResetDate = () => {
+    setSelectedDateMin("");
+    setSelectedDateMax("");
+  };
+
+  const handleMinDate = (event: any) => {
+    const date = new Date(event.target.value);
+    const dateISO = date.toISOString().split("T")[0];
+    setDateMin(dateISO);
+    setDateMinIsSelected(true);
+  };
+
+  const handleSortOrder = (event: any) => {
+    const dateLimit = new Date(event.target.value);
+    const dateLimil = dateLimit.toISOString().split("T")[0];
+
+    // Filtrar las órdenes que se encuentren entre dateMin y dateLimil
+    const _ordersInRange = orders.filter((order: any) => {
+      const orderDate = new Date(order.date);
+      const orderDateISO = orderDate.toISOString().split("T")[0];
+      console.log(`${dateMin} entre ${orderDateISO} entre ${dateLimil}`);
+      return orderDateISO >= dateMin && orderDateISO <= dateLimil;
+    });
+    console.log(_ordersInRange);
+    setIsFiltering(true);
+    setOrdersInRange(_ordersInRange);
+  };
+
+  const handleDelete = async (code: any, index: number) => {
+    const res = await axios.delete(
+      `https://api-maracomp-production-864a.up.railway.app/detailorder/${code}`
+    );
+    res.status < 300
       ? toast.success("Se ha eliminado la orden y sus detalles exitosamente")
-            : toast.error("Ha ocurrido un error tratando de eliminar la orden")
-        orders.splice(index, 1);
-        setOrders([...orders])
-    }
+      : toast.error("Ha ocurrido un error tratando de eliminar la orden");
+    orders.splice(index, 1);
+    setOrders([...orders]);
+    setIsFiltering(false);
+    handleResetDate();
+  };
 
   return (
     <div className="relative bg-gray-700 w-full min-h-[90%] flex items-center justify-center">
@@ -90,8 +113,46 @@ export default function Page() {
             </p>
           </div>
           <div>
-            <div>
+            <div className="flex items-center justify-end">
               <CreateOrderRequest></CreateOrderRequest>
+            </div>
+            <div className="mt-4 flex flex-row gap-x-3 items-center justify-center">
+              <div>
+                <button
+                  onClick={() => {
+                    setIsFiltering(false);
+                    handleResetDate();
+                  }}
+                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Limpiar
+                </button>
+              </div>
+              <div>
+                <input
+                  type="date"
+                  value={selectedDateMin}
+                  className="rounded-[10px] text-black"
+                  onChange={(event) => {
+                    handleMinDate(event);
+                    setSelectedDateMin(event.target.value);
+                  }}
+                />
+              </div>
+              <p className="text-black">hasta</p>
+              <div>
+                <input
+                  type="date"
+                  disabled={dateMinIsSelected != true ? true : false}
+                  className="rounded-[10px] text-black"
+                  min={dateMin}
+                  value={selectedDateMax}
+                  onChange={(event) => {
+                    handleSortOrder(event);
+                    setSelectedDateMax(event.target.value);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -104,9 +165,11 @@ export default function Page() {
                 <tr className="border-transparent">
                   <th className=" text-black font-bold text-lg ">Código</th>
                   <th className=" text-black font-bold text-lg ">Suplidor</th>
-                  <th className=" text-black font-bold text-lg ">Fecha Límite</th>
-                                  <th className=" text-black font-bold text-lg ">Estado</th>
-                                  <th className=" text-black font-bold text-lg ">Total</th>
+                  <th className=" text-black font-bold text-lg ">
+                    Fecha Límite
+                  </th>
+                  <th className=" text-black font-bold text-lg ">Estado</th>
+                  <th className=" text-black font-bold text-lg ">Total</th>
                   <th className=" text-black font-bold text-lg text-right">
                     Acción
                   </th>
@@ -120,21 +183,29 @@ export default function Page() {
                     <td colSpan={3}>Sin datos</td>
                   </tr>
                 ) : (
-                  currentOrders.map((order, index) => (
+                  currentOrders.map((order: any, index: any) => (
                     <tr key={index} className="border-transparent">
                       <td className="text-ellipsis">{order.code}</td>
-                      <td className="text-ellipsis">{
-                                suppliers.find(
-                                  (supplier) => supplier._id === order.supplierId
-                                )?.name
-                              }</td>
-                      <td className="text-ellipsis">{formatDate(order.date)}</td>
-                          <td className="text-ellipsis ">{order.status}</td>
-                          <td className="text-ellipsis ">RD$ {order.total}</td>
+                      <td className="text-ellipsis">
+                        {
+                          suppliers.find(
+                            (supplier: any) => supplier._id === order.supplierId
+                          )?.name
+                        }
+                      </td>
+                      <td className="text-ellipsis">
+                        {formatDate(order.date)}
+                      </td>
+                      <td className="text-ellipsis ">{order.status}</td>
+                      <td className="text-ellipsis ">RD$ {order.total}</td>
                       <td className="flex flex-row  space-x-4 justify-end items-center">
-                              <DetailOrder code={order.code} />
-                              <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
-                                  onClick={() => { handleDelete(order.code, index) }}>
+                        <DetailOrder code={order.code} />
+                        <button
+                          className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
+                          onClick={() => {
+                            handleDelete(order.code, index);
+                          }}
+                        >
                           <TrashIcon
                             className="
                                   w-6
@@ -171,8 +242,8 @@ export default function Page() {
             )}
           </div>
         </div>
-          </div>
-          <ToastContainer></ToastContainer>
+      </div>
+      <ToastContainer></ToastContainer>
     </div>
   );
 }

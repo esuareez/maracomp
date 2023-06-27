@@ -1,12 +1,19 @@
 "use client";
-import React, { use } from "react";
+import React, { use, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { StateContext } from "../context/mainData";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
-export default function CreateSupplier() {
+export default function CreateSupplier({ supplierId }: any) {
+  const { suppliers, setSuppliers } = useContext<any>(StateContext);
+  const supplier =
+    supplierId !== null
+      ? suppliers.find((s: any) => s._id === supplierId)
+      : null;
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -19,24 +26,50 @@ export default function CreateSupplier() {
       direccion: direccion.value,
     };
 
-    const res = await axios.post(
-      `https://api-maracomp-production-864a.up.railway.app/supplier`,
-      data
-    );
-    console.log(res);
+    let res = null;
+    if (supplierId === null) {
+      res = await axios.post(
+        `https://api-maracomp-production-864a.up.railway.app/supplier`,
+        data
+      );
 
-    name.value = "";
-    rnc.value = "";
-    ciudad.value = "";
-    direccion.value = "";
+      name.value = "";
+      rnc.value = "";
+      ciudad.value = "";
+      direccion.value = "";
+    } else {
+      res = await axios.put(
+        `https://api-maracomp-production-864a.up.railway.app/supplier/${supplierId}`,
+        data
+      );
+    }
+
+    if (res.status < 300) {
+      supplierId === null
+        ? toast.success("¡El suplidor ha sido agregado con éxito!")
+        : toast.success("¡El suplidor ha sido editado con éxito!");
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/supplier"
+      );
+      setSuppliers(data.reverse());
+      return;
+    }
+
+    toast.error("Ha ocurrido un error tratando de agregar el suplidor");
   };
 
   return (
     <Popup
       trigger={
-        <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
-          Agregar Suplidor
-        </button>
+        !supplier ? (
+          <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
+            Agregar Suplidor
+          </button>
+        ) : (
+          <button className="bg-orange-500 hover:bg-orange-600 duration-300 p-3 rounded-md">
+            <PencilSquareIcon className="w-6 text-white" />
+          </button>
+        )
       }
       modal
       nested
@@ -48,7 +81,9 @@ export default function CreateSupplier() {
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="font-bold text-3xl text-black">Suplidor</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Agrega la información del suplidor.
+                {supplier
+                  ? "Edita la información del suplidor."
+                  : "Agrega la información del suplidor."}
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-4">
@@ -64,6 +99,7 @@ export default function CreateSupplier() {
                       type="text"
                       name="name"
                       id="name"
+                      defaultValue={supplier ? supplier.name : ""}
                       autoComplete="supplier-name"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
@@ -83,6 +119,7 @@ export default function CreateSupplier() {
                       name="rnc"
                       id="rnc"
                       autoComplete="rnc"
+                      defaultValue={supplier ? supplier.rnc : ""}
                       maxLength={9}
                       minLength={0}
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -102,6 +139,7 @@ export default function CreateSupplier() {
                       id="ciudad"
                       name="ciudad"
                       type="text"
+                      defaultValue={supplier ? supplier.ciudad : ""}
                       autoComplete="ciudad"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
@@ -120,6 +158,7 @@ export default function CreateSupplier() {
                       id="direccion"
                       name="direccion"
                       type="text"
+                      defaultValue={supplier ? supplier.direccion : ""}
                       autoComplete="direccion"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
@@ -143,6 +182,7 @@ export default function CreateSupplier() {
               </button>
             </div>
           </div>
+          <ToastContainer></ToastContainer>
         </form>
       )}
     </Popup>

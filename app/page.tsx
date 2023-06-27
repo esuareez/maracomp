@@ -13,6 +13,7 @@ import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
 import CreateDispach from "@/components/dispach/create";
 import CreateOrderRequest from "@/components/orderRequest/create";
+import { StateProvider } from "@/components/context/mainData";
 
 metadata.title = "MaraComp | Inicio";
 export default function Home() {
