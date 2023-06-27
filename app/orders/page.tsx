@@ -2,7 +2,7 @@
 
 import CreateComponent from "@/components/createC";
 import Link from "next/link";
-import { use } from "react";
+import { use, useContext } from "react";
 import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -16,41 +16,22 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
   TrashIcon,
-    PencilSquareIcon,
-  EyeIcon
+  PencilSquareIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
 import CreateOrderRequest from "@/components/orderRequest/create";
 import DetailOrder from "@/components/detailOrder/show";
+import { StateContext } from "@/components/context/mainData";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(5);
-    const [orders, setOrders] = useState<any[]>([]);
-    const [suppliers, setSuppliers] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchComponents = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/order"
-      );
-      setOrders(data);
-    };
-    fetchComponents();
-  }, []);
-    
-    useEffect(() => {
-    const fetchComponents = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/supplier"
-      );
-      setSuppliers(data);
-    };
-    fetchComponents();
-  }, []);
+  const { orders, setOrders } = useContext<any>(StateContext);
+  const { suppliers, setSuppliers } = useContext<any>(StateContext);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
@@ -61,23 +42,25 @@ export default function Page() {
   const pageNumbers = Math.ceil(orders.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
-      setCurrentPage(pageNumber);
-    };
-    
-    const formatDate = (dateString : any) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     const formattedDate = date.toLocaleDateString();
     return formattedDate;
-    }
+  };
 
-    const handleDelete = async (code: any, index: number) => {
-        const res = await axios.delete(`https://api-maracomp-production-864a.up.railway.app/detailorder/${code}`);
-        res.status < 300
+  const handleDelete = async (code: any, index: number) => {
+    const res = await axios.delete(
+      `https://api-maracomp-production-864a.up.railway.app/detailorder/${code}`
+    );
+    res.status < 300
       ? toast.success("Se ha eliminado la orden y sus detalles exitosamente")
-            : toast.error("Ha ocurrido un error tratando de eliminar la orden")
-        orders.splice(index, 1);
-        setOrders([...orders])
-    }
+      : toast.error("Ha ocurrido un error tratando de eliminar la orden");
+    orders.splice(index, 1);
+    setOrders([...orders]);
+  };
 
   return (
     <div className="relative bg-gray-700 w-full min-h-[90%] flex items-center justify-center">
@@ -104,9 +87,11 @@ export default function Page() {
                 <tr className="border-transparent">
                   <th className=" text-black font-bold text-lg ">Código</th>
                   <th className=" text-black font-bold text-lg ">Suplidor</th>
-                  <th className=" text-black font-bold text-lg ">Fecha Límite</th>
-                                  <th className=" text-black font-bold text-lg ">Estado</th>
-                                  <th className=" text-black font-bold text-lg ">Total</th>
+                  <th className=" text-black font-bold text-lg ">
+                    Fecha Límite
+                  </th>
+                  <th className=" text-black font-bold text-lg ">Estado</th>
+                  <th className=" text-black font-bold text-lg ">Total</th>
                   <th className=" text-black font-bold text-lg text-right">
                     Acción
                   </th>
@@ -120,21 +105,29 @@ export default function Page() {
                     <td colSpan={3}>Sin datos</td>
                   </tr>
                 ) : (
-                  currentOrders.map((order, index) => (
+                  currentOrders.map((order: any, index: any) => (
                     <tr key={index} className="border-transparent">
                       <td className="text-ellipsis">{order.code}</td>
-                      <td className="text-ellipsis">{
-                                suppliers.find(
-                                  (supplier) => supplier._id === order.supplierId
-                                )?.name
-                              }</td>
-                      <td className="text-ellipsis">{formatDate(order.date)}</td>
-                          <td className="text-ellipsis ">{order.status}</td>
-                          <td className="text-ellipsis ">RD$ {order.total}</td>
+                      <td className="text-ellipsis">
+                        {
+                          suppliers.find(
+                            (supplier: any) => supplier._id === order.supplierId
+                          )?.name
+                        }
+                      </td>
+                      <td className="text-ellipsis">
+                        {formatDate(order.date)}
+                      </td>
+                      <td className="text-ellipsis ">{order.status}</td>
+                      <td className="text-ellipsis ">RD$ {order.total}</td>
                       <td className="flex flex-row  space-x-4 justify-end items-center">
-                              <DetailOrder code={order.code} />
-                              <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
-                                  onClick={() => { handleDelete(order.code, index) }}>
+                        <DetailOrder code={order.code} />
+                        <button
+                          className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
+                          onClick={() => {
+                            handleDelete(order.code, index);
+                          }}
+                        >
                           <TrashIcon
                             className="
                                   w-6
@@ -171,8 +164,8 @@ export default function Page() {
             )}
           </div>
         </div>
-          </div>
-          <ToastContainer></ToastContainer>
+      </div>
+      <ToastContainer></ToastContainer>
     </div>
   );
 }

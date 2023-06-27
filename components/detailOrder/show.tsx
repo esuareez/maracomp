@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
@@ -11,16 +11,17 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
   TrashIcon,
-    PencilSquareIcon,
-  EyeIcon
+  PencilSquareIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import { clone } from "chart.js/dist/helpers/helpers.core";
+import { StateContext } from "@/components/context/mainData";
 
 export default function DetailOrder({ code }: { code: any }) {
-    const _code = Number(code)
-    const [components, setComponents] = useState<any[]>([]);
-    const [_store, setStore] = useState<any>([]);
-    const[orderDetails, setOrderDetails] = useState<any>([]);
+  const _code = Number(code);
+  const { components, setComponents } = useContext<any>(StateContext);
+  const { store, setStore } = useContext<any>(StateContext);
+  const [orderDetails, setOrderDetails] = useState<any>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
@@ -29,32 +30,9 @@ export default function DetailOrder({ code }: { code: any }) {
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
-      );
-      setComponents(data);
-    };
-    fetchData();
-  }, []);
-
-  // Obtener los almacenes de un componente
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        `https://api-maracomp-production-864a.up.railway.app/store`
-      );
-      setStore(data);
-    };
-    fetchData();
-  });
-    
-    // Obtener todos los detalles de la orden
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
         `https://api-maracomp-production-864a.up.railway.app/detailorder/${_code}`
       );
-        setOrderDetails(data);
-        console.log(data)
+      setOrderDetails(data);
     };
     fetchData();
   }, []);
@@ -71,17 +49,16 @@ export default function DetailOrder({ code }: { code: any }) {
     setCurrentPage(pageNumber);
   };
 
-
   return (
     <Popup
       trigger={
         <button className="bg-verde hover:bg-verdeOscuro duration-300 p-3 rounded-md">
-                          <EyeIcon
-                            className="
+          <EyeIcon
+            className="
                                   w-6
                                   text-white"
-                          />
-                        </button>
+          />
+        </button>
       }
       modal
       nested
@@ -108,8 +85,8 @@ export default function DetailOrder({ code }: { code: any }) {
                       <tr className="border-transparent">
                         <th className=" text-black font-bold text-lg ">
                           Componente
-                                              </th>
-                                              <th className=" text-black font-bold text-lg ">
+                        </th>
+                        <th className=" text-black font-bold text-lg ">
                           Unidad
                         </th>
                         <th className=" text-black font-bold text-lg ">
@@ -131,27 +108,29 @@ export default function DetailOrder({ code }: { code: any }) {
                             <td>
                               {
                                 components.find(
-                                  (comp) => comp._id === orderDetail.componentId
+                                  (comp: any) =>
+                                    comp._id === orderDetail.componentId
                                 )?.description
                               }
-                                  </td>
-                                  <td>
+                            </td>
+                            <td>
                               {
                                 components.find(
-                                  (comp) => comp._id === orderDetail.componentId
+                                  (comp: any) =>
+                                    comp._id === orderDetail.componentId
                                 )?.unit
                               }
                             </td>
                             <td>
                               {
-                                _store.find(
+                                store.find(
                                   (store: any) =>
                                     store._id === orderDetail.storeId
                                 )?.description
                               }
                             </td>
-                                  <td>{orderDetail.quantity}</td>
-                                  <td>RD$ {orderDetail.total}</td>
+                            <td>{orderDetail.quantity}</td>
+                            <td>RD$ {orderDetail.total}</td>
                           </tr>
                         )
                       )}
@@ -173,9 +152,7 @@ export default function DetailOrder({ code }: { code: any }) {
                       </p>
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={
-                          indexOfLastComponent >= orderDetails.length
-                        }
+                        disabled={indexOfLastComponent >= orderDetails.length}
                       >
                         <ChevronDoubleRightIcon className="h-6 w-6 text-black hover:text-gray-500" />
                       </button>

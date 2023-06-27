@@ -11,6 +11,9 @@ export const StateProvider = ({ children }: any) => {
   const [state, setState] = useState(); // Define tu estado inicial aquí
   const [components, setComponents] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [store, setStore] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [inventorymovement, setInventoryMovement] = useState<any[]>([]);
 
   {
     /* Buscar todos los componentes */
@@ -47,6 +50,43 @@ export const StateProvider = ({ children }: any) => {
     fetchComponents();
   }, []);
 
+  {
+    /* Buscar todos los almacenes */
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await axios.get(
+        `https://api-maracomp-production-864a.up.railway.app/store`
+      );
+      setStore(data);
+    };
+    fetchData();
+  });
+  {
+    /* Buscar todas las ordenes */
+  }
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/order"
+      );
+      setOrders(data.reverse());
+    };
+    fetchComponents();
+  }, []);
+  {
+    /* Buscar todas los dispach */
+  }
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "http://localhost:3001/inventorymovement"
+      );
+      setInventoryMovement(data);
+    };
+    fetchComponents();
+  });
+
   // Pasa el estado y la función de actualización
 
   return (
@@ -58,6 +98,10 @@ export const StateProvider = ({ children }: any) => {
         setComponents,
         suppliers,
         setSuppliers,
+        store,
+        setStore,
+        orders,
+        setOrders,
       }}
     >
       {children}

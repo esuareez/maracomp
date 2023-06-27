@@ -19,9 +19,6 @@ export default function CreateStore() {
       balance: Number(balance.value),
     };
 
-    console.log(data);
-    console.log(component.value);
-
     const res = await axios.post(
       `https://api-maracomp-production-864a.up.railway.app/store/${component.value}`,
       data
@@ -29,7 +26,6 @@ export default function CreateStore() {
     res.status < 300
       ? toast.success("¡El suplidor ha sido agregado con éxito!")
       : toast.error("Ha ocurrido un error tratando de agregar el suplidor");
-    console.log(res);
   };
 
   return (

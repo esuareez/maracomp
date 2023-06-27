@@ -39,8 +39,6 @@ export default function CreateComponent() {
         discount: Number(event.target.discount.value),
       },
     };
-
-    console.log(data);
     const res = await axios.post(
       "https://api-maracomp-production-864a.up.railway.app/store",
       data

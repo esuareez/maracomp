@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
@@ -13,42 +13,22 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { clone } from "chart.js/dist/helpers/helpers.core";
+import { StateContext } from "../context/mainData";
 
 export default function CreateOrderRequest() {
-  const [components, setComponents] = useState<any[]>([]);
+  const { components, setComponents } = useContext<any>(StateContext);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
   const [maxQuantity, setMaxQuantity] = useState<any>(0);
-  const [_store, setStore] = useState<any>([]);
+  const { store, setStore } = useContext<any>(StateContext);
   const [activeStore, setActiveStore] = useState<any>([]);
   const [activeComponent, setActiveComponent] = useState<any>();
   const [defaultStore, setDefaultStore] = useState(true);
   const [defaultOption, setDefaultOption] = useState(true);
   const [_date, setDate] = useState<Date>();
+  const { orders, setOrders } = useContext<any>(StateContext);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
-
-  // Obtener todos los componentes
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
-      );
-      setComponents(data);
-    };
-    fetchData();
-  }, []);
-
-  // Obtener los almacenes de un componente
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        `https://api-maracomp-production-864a.up.railway.app/store`
-      );
-      setStore(data);
-    };
-    fetchData();
-  });
 
   const getStores = (event: any) => {
     setDefaultStore(true);
@@ -56,7 +36,7 @@ export default function CreateOrderRequest() {
       (component: any) => component._id === event.target.value
     );
     setActiveComponent(selectedComponents);
-    const activeSt = _store.filter((store: any) => {
+    const activeSt = store.filter((store: any) => {
       return selectedComponents.store.some(
         (item: any) => item.store === store._id
       );
@@ -72,7 +52,7 @@ export default function CreateOrderRequest() {
   const handleSubmitComponent = (e: any) => {
     e.preventDefault();
     const { component, store, balance, date } = e.target.elements;
-    const _unit = components.find((comp) => comp._id === component.value);
+    const _unit = components.find((comp: any) => comp._id === component.value);
     const data = {
       componentId: component.value,
       storeId: store.value,
@@ -103,18 +83,23 @@ export default function CreateOrderRequest() {
       date: dateISO,
       detail: selectedComponents,
     };
-    console.log(data);
     const res = await axios.post(
       `https://api-maracomp-production-864a.up.railway.app/orderRequest`,
       data
     );
-    res.status < 300
-      ? toast.success("Se ha creado la orden requerida!")
-      : toast.error("Ha ocurrido un error al crear la orden requerida");
+    if (res.status < 300) {
+      toast.success("Se ha creado la orden requerida!");
+      setSelectedComponents([]);
+      setDefaultStore(true);
+      setDefaultOption(true);
+      const { data } = await axios.get(
+        `https://api-maracomp-production-864a.up.railway.app/order`
+      );
+      setOrders(data.reverse());
+      return;
+    }
 
-    setSelectedComponents([]);
-    setDefaultStore(true);
-    setDefaultOption(true);
+    toast.error("Ha ocurrido un error al crear la orden requerida");
   };
 
   const indexOfLastComponent = currentPage * componentsPerPage;
@@ -183,7 +168,7 @@ export default function CreateOrderRequest() {
                         >
                           SELECCIONA COMPONENTE
                         </option>
-                        {components.map((component) => (
+                        {components.map((component: any) => (
                           <option
                             key={component._id}
                             value={component._id}
@@ -338,13 +323,14 @@ export default function CreateOrderRequest() {
                             <td>
                               {
                                 components.find(
-                                  (comp) => comp._id === component.componentId
+                                  (comp: any) =>
+                                    comp._id === component.componentId
                                 )?.description
                               }
                             </td>
                             <td>
                               {
-                                _store.find(
+                                store.find(
                                   (store: any) =>
                                     store._id === component.storeId
                                 )?.description

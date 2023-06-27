@@ -6,10 +6,10 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { StateContext } from "../context/mainData";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
 export default function CreateSupplier({ supplierId }: any) {
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
-  console.log(supplierId);
   const supplier =
     supplierId !== null
       ? suppliers.find((s: any) => s._id === supplierId)
@@ -32,7 +32,7 @@ export default function CreateSupplier({ supplierId }: any) {
         `https://api-maracomp-production-864a.up.railway.app/supplier`,
         data
       );
-      console.log(res);
+
       name.value = "";
       rnc.value = "";
       ciudad.value = "";
@@ -42,7 +42,6 @@ export default function CreateSupplier({ supplierId }: any) {
         `https://api-maracomp-production-864a.up.railway.app/supplier/${supplierId}`,
         data
       );
-      console.log(res);
     }
 
     if (res.status < 300) {
@@ -62,9 +61,15 @@ export default function CreateSupplier({ supplierId }: any) {
   return (
     <Popup
       trigger={
-        <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
-          Agregar Suplidor
-        </button>
+        !supplier ? (
+          <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
+            Agregar Suplidor
+          </button>
+        ) : (
+          <button className="bg-orange-500 hover:bg-orange-600 duration-300 p-3 rounded-md">
+            <PencilSquareIcon className="w-6 text-white" />
+          </button>
+        )
       }
       modal
       nested

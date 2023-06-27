@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
@@ -13,12 +13,13 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { clone } from "chart.js/dist/helpers/helpers.core";
+import { StateContext } from "../context/mainData";
 
 export default function CreateDispach() {
-  const [components, setComponents] = useState<any[]>([]);
+  const { components, setComponents } = useContext<any>(StateContext);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
   const [maxQuantity, setMaxQuantity] = useState<any>(0);
-  const [_store, setStore] = useState<any>([]);
+  const { store, setStore } = useContext<any>(StateContext);
   const [activeStore, setActiveStore] = useState<any>([]);
   const [activeComponent, setActiveComponent] = useState<any>();
   const [defaultStore, setDefaultStore] = useState(true);
@@ -27,35 +28,13 @@ export default function CreateDispach() {
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
 
-  // Obtener todos los componentes
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
-      );
-      setComponents(data);
-    };
-    fetchData();
-  }, []);
-
-  // Obtener los almacenes de un componente
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        `https://api-maracomp-production-864a.up.railway.app/store`
-      );
-      setStore(data);
-    };
-    fetchData();
-  });
-
   const getStores = (event: any) => {
     setDefaultStore(true);
     const selectedComponents = components.find(
       (component: any) => component._id === event.target.value
     );
     setActiveComponent(selectedComponents);
-    const activeSt = _store.filter((store: any) => {
+    const activeSt = store.filter((store: any) => {
       return selectedComponents.store.some(
         (item: any) => item.store === store._id && item.balance > 0
       );
@@ -108,11 +87,10 @@ export default function CreateDispach() {
     res.status === 201
       ? toast.success("Se han despachado los componentes!")
       : toast.error("Ha ocurrido un error");
-    
+
     setSelectedComponents([]);
     setDefaultStore(true);
     setDefaultOption(true);
-
   };
 
   const indexOfLastComponent = currentPage * componentsPerPage;
@@ -127,10 +105,10 @@ export default function CreateDispach() {
     setCurrentPage(pageNumber);
   };
 
-  const handleDelete = (index : any) => {
+  const handleDelete = (index: any) => {
     selectedComponents.splice(index, 1);
     setSelectedComponents([...selectedComponents]);
-  }
+  };
 
   return (
     <Popup
@@ -171,10 +149,14 @@ export default function CreateDispach() {
                         className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                         onChange={getStores}
                       >
-                        <option disabled selected={defaultOption != true ? false : true} value="">
+                        <option
+                          disabled
+                          selected={defaultOption != true ? false : true}
+                          value=""
+                        >
                           SELECCIONA COMPONENTE
                         </option>
-                        {components.map((component) => (
+                        {components.map((component: any) => (
                           <option
                             key={component._id}
                             value={component._id}
@@ -284,13 +266,14 @@ export default function CreateDispach() {
                             <td>
                               {
                                 components.find(
-                                  (comp) => comp._id === component.componentId
+                                  (comp: any) =>
+                                    comp._id === component.componentId
                                 )?.description
                               }
                             </td>
                             <td>
                               {
-                                _store.find(
+                                store.find(
                                   (store: any) =>
                                     store._id === component.storeId
                                 )?.description
@@ -298,7 +281,12 @@ export default function CreateDispach() {
                             </td>
                             <td>{component.quantity}</td>
                             <td>
-                              <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md" onClick={() => { handleDelete(index) }}>
+                              <button
+                                className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
+                                onClick={() => {
+                                  handleDelete(index);
+                                }}
+                              >
                                 <TrashIcon
                                   className="
                                   w-6
