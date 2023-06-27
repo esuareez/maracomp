@@ -17,9 +17,11 @@ import { StateContext } from "../context/mainData";
 
 export default function CreateDispach() {
   const { components, setComponents } = useContext<any>(StateContext);
+  const { inventorymovement, setInventoryMovement } =
+    useContext<any>(StateContext);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
   const [maxQuantity, setMaxQuantity] = useState<any>(0);
-  const { store, setStore } = useContext<any>(StateContext);
+  const { stores, setStores } = useContext<any>(StateContext);
   const [activeStore, setActiveStore] = useState<any>([]);
   const [activeComponent, setActiveComponent] = useState<any>();
   const [defaultStore, setDefaultStore] = useState(true);
@@ -34,7 +36,7 @@ export default function CreateDispach() {
       (component: any) => component._id === event.target.value
     );
     setActiveComponent(selectedComponents);
-    const activeSt = store.filter((store: any) => {
+    const activeSt = stores.filter((store: any) => {
       return selectedComponents.store.some(
         (item: any) => item.store === store._id && item.balance > 0
       );
@@ -84,13 +86,19 @@ export default function CreateDispach() {
       `https://api-maracomp-production-864a.up.railway.app/dispach`,
       data
     );
-    res.status === 201
-      ? toast.success("Se han despachado los componentes!")
-      : toast.error("Ha ocurrido un error");
+    if (res.status < 300) {
+      toast.success("Se han despachado los componentes!");
+      setSelectedComponents([]);
+      setDefaultStore(true);
+      setDefaultOption(true);
+      const { data } = await axios.get(
+        `http://localhost:3001/inventorymovement`
+      );
+      setInventoryMovement(data.reverse());
+      return;
+    }
 
-    setSelectedComponents([]);
-    setDefaultStore(true);
-    setDefaultOption(true);
+    toast.error("Ha ocurrido un error");
   };
 
   const indexOfLastComponent = currentPage * componentsPerPage;
@@ -273,7 +281,7 @@ export default function CreateDispach() {
                             </td>
                             <td>
                               {
-                                store.find(
+                                stores.find(
                                   (store: any) =>
                                     store._id === component.storeId
                                 )?.description

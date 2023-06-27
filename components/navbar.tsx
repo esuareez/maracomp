@@ -76,12 +76,20 @@ export default function Navbar() {
               <Link
                 href="/orders"
                 className={`  ${
-                  usePathname() === "/orders"
+                  usePathname() === "/orders" ? styles.current : styles.inactive
+                }`}
+              >
+                Ordenes
+              </Link>
+              <Link
+                href="/inventorymovement"
+                className={`  ${
+                  usePathname() === "/inventorymovement"
                     ? styles.current
                     : styles.inactive
                 }`}
               >
-                Ordenes
+                Movimientos
               </Link>
             </div>
           </div>
