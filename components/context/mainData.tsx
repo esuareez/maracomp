@@ -14,6 +14,7 @@ export const StateProvider = ({ children }: any) => {
   const [stores, setStores] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [inventorymovement, setInventoryMovement] = useState<any[]>([]);
+  const [supplierTime, setSupplierTime] = useState<any[]>([]);
 
   {
     /* Buscar todos los componentes */
@@ -86,7 +87,18 @@ export const StateProvider = ({ children }: any) => {
     };
     fetchComponents();
   }, []);
-
+  {
+    /* Buscar todas los supplierTime */
+  }
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/supplierTime"
+      );
+      setSupplierTime(data.reverse());
+    };
+    fetchComponents();
+  }, []);
   // Pasa el estado y la función de actualización
 
   return (
@@ -104,6 +116,8 @@ export const StateProvider = ({ children }: any) => {
         setOrders,
         inventorymovement,
         setInventoryMovement,
+        supplierTime,
+        setSupplierTime,
       }}
     >
       {children}

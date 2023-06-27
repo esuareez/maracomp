@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
 import { StateContext } from "@/components/context/mainData";
+import ViewSupplierTime from "@/components/component/view";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
@@ -91,12 +92,7 @@ export default function Page() {
                       </td>
                       <td className="text-ellipsis ">{component.unit}</td>
                       <td className="flex flex-row space-x-4 justify-end items-center">
-                        <button className="bg-orange-500 hover:bg-orange-600 duration-300 p-3 rounded-md">
-                          <PencilSquareIcon className="w-6 text-white" />
-                        </button>
-                        <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md">
-                          <TrashIcon className="w-6 text-white" />
-                        </button>
+                        <ViewSupplierTime componentId={component._id} />
                       </td>
                     </tr>
                   ))
