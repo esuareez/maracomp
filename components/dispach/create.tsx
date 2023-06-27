@@ -92,7 +92,7 @@ export default function CreateDispach() {
       setDefaultStore(true);
       setDefaultOption(true);
       const { data } = await axios.get(
-        `http://localhost:3001/inventorymovement`
+        `https://api-maracomp-production-864a.up.railway.app/inventorymovement`
       );
       setInventoryMovement(data.reverse());
       return;
