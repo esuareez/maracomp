@@ -1,13 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { StateContext } from "./context/mainData";
 
 export default function CreateComponent() {
   const [suppliers, setSuppliers] = useState<any[]>([]);
+  const { components, setComponents } = useContext<any>(StateContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +45,6 @@ export default function CreateComponent() {
       "https://api-maracomp-production-864a.up.railway.app/store",
       data
     );
-    status = res.status;
 
     event.target.component.value = "";
     event.target.unit.value = "";
@@ -53,6 +54,22 @@ export default function CreateComponent() {
     event.target.price.value = "";
     event.target.deliveryTimeInDays.value = "";
     event.target.discount.value = "";
+
+    if (res.status < 300) {
+      toast.success("¡El componente ha sido agregado con éxito!");
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/component"
+      );
+      setComponents(
+        data.sort((a: any, b: any) => {
+          const aCode = Number(a.code.replace("C-", ""));
+          const bCode = Number(b.code.replace("C-", ""));
+          return bCode - aCode;
+        })
+      );
+      return;
+    }
+    toast.error("Ha ocurrido un error tratando de agregar el componente");
   };
 
   return (
@@ -258,6 +275,7 @@ export default function CreateComponent() {
               </button>
             </div>
           </div>
+          <ToastContainer></ToastContainer>
         </form>
       )}
     </Popup>

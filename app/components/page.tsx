@@ -2,7 +2,7 @@
 
 import CreateComponent from "@/components/createC";
 import Link from "next/link";
-import { use } from "react";
+import { use, useContext } from "react";
 import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
@@ -17,23 +17,14 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
+import { StateContext } from "@/components/context/mainData";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
   // Create pagination for components list 10 per page function
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(5);
-  const [components, setComponents] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchComponents = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
-      );
-      setComponents(data);
-    };
-    fetchComponents();
-  }, []);
+  const { components, setComponents } = useContext<any>(StateContext);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
@@ -41,7 +32,7 @@ export default function Page() {
     indexOfFirstComponent,
     indexOfLastComponent
   );
-  const pageNumbers = components.length / componentsPerPage;
+  const pageNumbers = Math.ceil(components.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -76,6 +67,7 @@ export default function Page() {
               {/* head */}
               <thead>
                 <tr className="border-transparent">
+                  <th className=" text-black font-bold text-lg ">Código</th>
                   <th className=" text-black font-bold text-lg ">Componente</th>
                   <th className=" text-black font-bold text-lg ">Unidad</th>
                   <th className=" text-black font-bold text-lg text-right">
@@ -91,8 +83,9 @@ export default function Page() {
                     <td colSpan={3}>Sin datos</td>
                   </tr>
                 ) : (
-                  currentComponents.map((component, index) => (
+                  currentComponents.map((component: any, index: any) => (
                     <tr key={index} className="border-transparent">
+                      <td className="text-ellipsis ">{component.code}</td>
                       <td className="text-ellipsis ">
                         {component.description}
                       </td>
