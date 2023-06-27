@@ -32,14 +32,23 @@ export default function Page() {
   const [componentsPerPage, setComponentsPerPage] = useState(5);
   const { orders, setOrders } = useContext<any>(StateContext);
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
+  const [ordersInRange, setOrdersInRange] = useState<any>([]);
+  const [dateMinIsSelected, setDateMinIsSelected] = useState<boolean>(false);
+  const [isFiltering, setIsFiltering] = useState<boolean>(false);
+  const [dateMin, setDateMin] = useState<any>(null);
+  const [selectedDateMin, setSelectedDateMin] = useState<any>("");
+  const [selectedDateMax, setSelectedDateMax] = useState<any>("");
+  useEffect(() => {
+    setDateMin(new Date());
+  }, []);
 
   const indexOfLastComponent = currentPage * componentsPerPage;
   const indexOfFirstComponent = indexOfLastComponent - componentsPerPage;
-  const currentOrders = orders.slice(
-    indexOfFirstComponent,
-    indexOfLastComponent
-  );
-  const pageNumbers = Math.ceil(orders.length / componentsPerPage);
+  const currentOrders =
+    isFiltering != true
+      ? orders.slice(indexOfFirstComponent, indexOfLastComponent)
+      : ordersInRange.slice(indexOfFirstComponent, indexOfLastComponent);
+  const pageNumbers = Math.ceil(ordersInRange.length / componentsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -47,8 +56,37 @@ export default function Page() {
 
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
+    console.log(dateString);
     const formattedDate = date.toLocaleDateString();
     return formattedDate;
+  };
+
+  const handleResetDate = () => {
+    setSelectedDateMin("");
+    setSelectedDateMax("");
+  };
+
+  const handleMinDate = (event: any) => {
+    const date = new Date(event.target.value);
+    const dateISO = date.toISOString().split("T")[0];
+    setDateMin(dateISO);
+    setDateMinIsSelected(true);
+  };
+
+  const handleSortOrder = (event: any) => {
+    const dateLimit = new Date(event.target.value);
+    const dateLimil = dateLimit.toISOString().split("T")[0];
+
+    // Filtrar las órdenes que se encuentren entre dateMin y dateLimil
+    const _ordersInRange = orders.filter((order: any) => {
+      const orderDate = new Date(order.date);
+      const orderDateISO = orderDate.toISOString().split("T")[0];
+      console.log(`${dateMin} entre ${orderDateISO} entre ${dateLimil}`);
+      return orderDateISO >= dateMin && orderDateISO <= dateLimil;
+    });
+    console.log(_ordersInRange);
+    setIsFiltering(true);
+    setOrdersInRange(_ordersInRange);
   };
 
   const handleDelete = async (code: any, index: number) => {
@@ -60,6 +98,8 @@ export default function Page() {
       : toast.error("Ha ocurrido un error tratando de eliminar la orden");
     orders.splice(index, 1);
     setOrders([...orders]);
+    setIsFiltering(false);
+    handleResetDate();
   };
 
   return (
@@ -73,8 +113,46 @@ export default function Page() {
             </p>
           </div>
           <div>
-            <div>
+            <div className="flex items-center justify-end">
               <CreateOrderRequest></CreateOrderRequest>
+            </div>
+            <div className="mt-4 flex flex-row gap-x-3 items-center justify-center">
+              <div>
+                <button
+                  onClick={() => {
+                    setIsFiltering(false);
+                    handleResetDate();
+                  }}
+                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Limpiar
+                </button>
+              </div>
+              <div>
+                <input
+                  type="date"
+                  value={selectedDateMin}
+                  className="rounded-[10px] text-black"
+                  onChange={(event) => {
+                    handleMinDate(event);
+                    setSelectedDateMin(event.target.value);
+                  }}
+                />
+              </div>
+              <p className="text-black">hasta</p>
+              <div>
+                <input
+                  type="date"
+                  disabled={dateMinIsSelected != true ? true : false}
+                  className="rounded-[10px] text-black"
+                  min={dateMin}
+                  value={selectedDateMax}
+                  onChange={(event) => {
+                    handleSortOrder(event);
+                    setSelectedDateMax(event.target.value);
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -166,6 +244,7 @@ export default function Page() {
         </div>
       </div>
       <ToastContainer></ToastContainer>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.6/datepicker.min.js"></script>
     </div>
   );
 }

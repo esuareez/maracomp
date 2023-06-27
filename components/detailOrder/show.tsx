@@ -20,7 +20,7 @@ import { StateContext } from "@/components/context/mainData";
 export default function DetailOrder({ code }: { code: any }) {
   const _code = Number(code);
   const { components, setComponents } = useContext<any>(StateContext);
-  const { store, setStore } = useContext<any>(StateContext);
+  const { stores, setStores } = useContext<any>(StateContext);
   const [orderDetails, setOrderDetails] = useState<any>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -123,7 +123,7 @@ export default function DetailOrder({ code }: { code: any }) {
                             </td>
                             <td>
                               {
-                                store.find(
+                                stores.find(
                                   (store: any) =>
                                     store._id === orderDetail.storeId
                                 )?.description

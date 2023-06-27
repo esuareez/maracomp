@@ -19,7 +19,7 @@ export default function CreateOrderRequest() {
   const { components, setComponents } = useContext<any>(StateContext);
   const [selectedComponents, setSelectedComponents] = useState<any>([]);
   const [maxQuantity, setMaxQuantity] = useState<any>(0);
-  const { store, setStore } = useContext<any>(StateContext);
+  const { stores, setStore } = useContext<any>(StateContext);
   const [activeStore, setActiveStore] = useState<any>([]);
   const [activeComponent, setActiveComponent] = useState<any>();
   const [defaultStore, setDefaultStore] = useState(true);
@@ -36,7 +36,7 @@ export default function CreateOrderRequest() {
       (component: any) => component._id === event.target.value
     );
     setActiveComponent(selectedComponents);
-    const activeSt = store.filter((store: any) => {
+    const activeSt = stores.filter((store: any) => {
       return selectedComponents.store.some(
         (item: any) => item.store === store._id
       );
@@ -330,7 +330,7 @@ export default function CreateOrderRequest() {
                             </td>
                             <td>
                               {
-                                store.find(
+                                stores.find(
                                   (store: any) =>
                                     store._id === component.storeId
                                 )?.description

@@ -80,7 +80,7 @@ export const StateProvider = ({ children }: any) => {
   useEffect(() => {
     const fetchComponents = async () => {
       const { data } = await axios.get(
-        "http://localhost:3001/inventorymovement"
+        "https://api-maracomp-production-864a.up.railway.app/inventorymovement"
       );
       setInventoryMovement(data.reverse());
     };
