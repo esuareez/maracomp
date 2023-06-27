@@ -28,8 +28,7 @@ export default function Dona() {
                     boxWidth: 40,
                     padding: 20
                 },
-                position: 'bottom',
-            }
+            },
         },
         animation: {
             duration: 2000,
