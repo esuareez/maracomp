@@ -15,10 +15,12 @@ import {
   ChevronDoubleRightIcon,
   PencilSquareIcon,
   TrashIcon,
+  BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
 import { StateContext } from "@/components/context/mainData";
 import ViewSupplierTime from "@/components/component/view";
+import CreateSupplierTime from "@/components/supplierTime/create";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
@@ -93,6 +95,7 @@ export default function Page() {
                       <td className="text-ellipsis ">{component.unit}</td>
                       <td className="flex flex-row space-x-4 justify-end items-center">
                         <ViewSupplierTime componentId={component._id} />
+                        <CreateSupplierTime componentId={component._id} />
                       </td>
                     </tr>
                   ))

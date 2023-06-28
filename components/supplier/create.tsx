@@ -27,7 +27,7 @@ export default function CreateSupplier({ supplierId }: any) {
     };
 
     let res = null;
-    if (supplierId === null) {
+    if (supplier === null) {
       res = await axios.post(
         `https://api-maracomp-production-864a.up.railway.app/supplier`,
         data
