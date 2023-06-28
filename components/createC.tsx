@@ -32,12 +32,6 @@ export default function CreateComponent() {
         balance: Number(event.target.balance.value),
         storeDesc: event.target.store.value,
       },
-      supplierTime: {
-        supplierId: event.target.supplier.value,
-        price: Number(event.target.price.value),
-        deliveryTimeInDays: Number(event.target.deliveryTimeInDays.value),
-        discount: Number(event.target.discount.value),
-      },
     };
     const res = await axios.post(
       "https://api-maracomp-production-864a.up.railway.app/store",
@@ -48,10 +42,6 @@ export default function CreateComponent() {
     event.target.unit.value = "";
     event.target.balance.value = "";
     event.target.store.value = "";
-    event.target.supplier.value = "";
-    event.target.price.value = "";
-    event.target.deliveryTimeInDays.value = "";
-    event.target.discount.value = "";
 
     if (res.status < 300) {
       toast.success("¡El componente ha sido agregado con éxito!");
@@ -163,96 +153,6 @@ export default function CreateComponent() {
                       autoComplete="balance"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="supplier"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Suplidor
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="supplier"
-                      name="supplier"
-                      autoComplete="supplier-name"
-                      className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      {suppliers.map((supplier) => (
-                        <option key={supplier._id} value={supplier._id}>
-                          {supplier.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="price"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Precio del Suplidor
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="price"
-                      name="price"
-                      type="Number"
-                      min={0}
-                      defaultValue={0}
-                      pattern={`[0-9]*`}
-                      autoComplete="price"
-                      className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="discount"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Descuento (si aplica)
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="discount"
-                      name="discount"
-                      type="Number"
-                      min={0}
-                      max={100}
-                      defaultValue={0}
-                      autoComplete="email"
-                      className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="deliveryTimeInDays"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Tiempo de Entrega{" "}
-                    <span className="text-sm  text-gray-600 font-thin">
-                      (en días)
-                    </span>
-                  </label>
-                  <div className="mt-2">
-                    <div className="mt-2">
-                      <input
-                        id="deliveryTimeInDays"
-                        name="deliveryTimeInDays"
-                        type="Number"
-                        min={0}
-                        defaultValue={0}
-                        autoComplete="deliveryTimeInDays"
-                        className="block w-5/6  rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
