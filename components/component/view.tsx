@@ -66,6 +66,23 @@ export default function ViewSupplierTime({ componentId }: any) {
     setCurrentPage(pageNumber);
   };
 
+  const handleUpdateST = async (supplier: any, state: any) => {
+    const res = await axios.put(
+      `https://api-maracomp-production-864a.up.railway.app/supplierTime/${supplier._id}`,
+      {
+        supplierId: supplier.supplierId,
+        componentId: supplier.componentId,
+        deliveryTimeInDays: supplier.deliveryTimeInDays,
+        price: supplier.price,
+        discount: supplier.discount,
+        state: state,
+      }
+    );
+    if (res.status < 300) {
+      toast.success("Estado actualizado correctamente");
+    }
+  };
+
   return (
     <Popup
       trigger={
@@ -144,6 +161,7 @@ export default function ViewSupplierTime({ componentId }: any) {
                                       ...prevState,
                                       [index]: e.target.checked,
                                     }));
+                                    handleUpdateST(supplier, e.target.checked);
                                   }}
                                 />
                                 <div

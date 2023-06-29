@@ -19,12 +19,13 @@ import { AnyARecord } from "dns";
 
 export default function CreateSupplierTime({ componentId }: any) {
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
+  const { supplierTime, setSupplierTime } = useContext<any>(StateContext);
 
   const handleSubmit = async (event: any) => {
     try {
       event.preventDefault();
 
-      const data = {
+      const _data = {
         supplierId: event.target.supplier.value,
         componentId: componentId,
         price: Number(event.target.price.value),
@@ -33,13 +34,19 @@ export default function CreateSupplierTime({ componentId }: any) {
       };
       const res = await axios.post(
         "https://api-maracomp-production-864a.up.railway.app/supplierTime",
-        data
+        _data
       );
 
       event.target.supplier.value = "";
       event.target.price.value = "";
       event.target.deliveryTimeInDays.value = "";
       event.target.discount.value = "";
+
+      const { data } = await axios.get(
+        `https://api-maracomp-production-864a.up.railway.app/supplierTime`
+      );
+      setSupplierTime(data);
+
       toast.success("¡El tiempo del suplidor ha sido agregado con éxito!");
     } catch (error) {
       toast.error("¡Ha ocurrido un error al agregar el tiempo del suplidor!");

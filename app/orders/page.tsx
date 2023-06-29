@@ -186,7 +186,7 @@ export default function Page() {
                   <th className=" text-black font-bold text-lg ">Código</th>
                   <th className=" text-black font-bold text-lg ">Suplidor</th>
                   <th className=" text-black font-bold text-lg ">
-                    Fecha Límite
+                    Fecha Orden
                   </th>
                   <th className=" text-black font-bold text-lg ">Estado</th>
                   <th className=" text-black font-bold text-lg ">Total</th>
