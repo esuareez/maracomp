@@ -33,6 +33,8 @@ export default function Page() {
   const [componentsPerPage, setComponentsPerPage] = useState(5);
   const { orders, setOrders } = useContext<any>(StateContext);
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
+  const { inventoryMovement, setInventoryMovement } =
+    useContext<any>(StateContext);
   const [ordersInRange, setOrdersInRange] = useState<any>([]);
   const [dateMinIsSelected, setDateMinIsSelected] = useState<boolean>(false);
   const [isFiltering, setIsFiltering] = useState<boolean>(false);
@@ -101,6 +103,24 @@ export default function Page() {
     setOrders([...orders]);
     setIsFiltering(false);
     handleResetDate();
+  };
+
+  const handleComplete = async (id: string, index: number) => {
+    try {
+      const res = await axios.put(
+        `https://api-maracomp-production-864a.up.railway.app/detailorder/${id}`
+      );
+      if (res.status < 300) {
+        toast.success("Se ha completado la orden exitosamente");
+        orders[index].status = "COMPLETADA";
+        setOrders([...orders]);
+        setInventoryMovement(
+          await axios.get(
+            "https://api-maracomp-production-864a.up.railway.app/inventorymovement"
+          )
+        );
+      }
+    } catch (error) {}
   };
 
   return (
@@ -202,9 +222,12 @@ export default function Page() {
                       <td className="flex flex-row  space-x-4 justify-end items-center">
                         <button
                           className="bg-verde hover:bg-verdeOscuro duration-300 p-3 rounded-md"
-                          // onClick={() => {
-                          //   handleDelete(order.code, index);
-                          // }}
+                          onClick={() => {
+                            handleComplete(order._id, index);
+                          }}
+                          disabled={
+                            order.status === "COMPLETADA" ? true : false
+                          }
                         >
                           <CheckIcon
                             className="
