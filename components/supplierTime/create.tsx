@@ -21,7 +21,8 @@ export default function CreateSupplierTime({ componentId }: any) {
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
 
   const handleSubmit = async (event: any) => {
-    event.preventDefault();
+    try {
+      event.preventDefault();
 
     const data = {
       supplierId: event.target.supplier.value,
@@ -39,12 +40,13 @@ export default function CreateSupplierTime({ componentId }: any) {
     event.target.price.value = "";
     event.target.deliveryTimeInDays.value = "";
     event.target.discount.value = "";
-
-    if (res.status < 300) {
-      toast.success("¡El tiempo del suplidor ha sido agregado con éxito!");
-      return;
+    toast.success("¡El tiempo del suplidor ha sido agregado con éxito!");
+    
+    } catch (error) {
+      toast.error(error);
     }
-    toast.error("Ha ocurrido un error tratando de agregar el componente");
+    
+    
   };
 
   return (
