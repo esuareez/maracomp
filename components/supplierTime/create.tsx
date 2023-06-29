@@ -24,29 +24,26 @@ export default function CreateSupplierTime({ componentId }: any) {
     try {
       event.preventDefault();
 
-    const data = {
-      supplierId: event.target.supplier.value,
-      componentId: componentId,
-      price: Number(event.target.price.value),
-      deliveryTimeInDays: Number(event.target.deliveryTimeInDays.value),
-      discount: Number(event.target.discount.value),
-    };
-    const res = await axios.post(
-      "https://api-maracomp-production-864a.up.railway.app/supplierTime",
-      data
-    );
+      const data = {
+        supplierId: event.target.supplier.value,
+        componentId: componentId,
+        price: Number(event.target.price.value),
+        deliveryTimeInDays: Number(event.target.deliveryTimeInDays.value),
+        discount: Number(event.target.discount.value),
+      };
+      const res = await axios.post(
+        "https://api-maracomp-production-864a.up.railway.app/supplierTime",
+        data
+      );
 
-    event.target.supplier.value = "";
-    event.target.price.value = "";
-    event.target.deliveryTimeInDays.value = "";
-    event.target.discount.value = "";
-    toast.success("¡El tiempo del suplidor ha sido agregado con éxito!");
-    
+      event.target.supplier.value = "";
+      event.target.price.value = "";
+      event.target.deliveryTimeInDays.value = "";
+      event.target.discount.value = "";
+      toast.success("¡El tiempo del suplidor ha sido agregado con éxito!");
     } catch (error) {
-      toast.error(error);
+      toast.error("¡Ha ocurrido un error al agregar el tiempo del suplidor!");
     }
-    
-    
   };
 
   return (

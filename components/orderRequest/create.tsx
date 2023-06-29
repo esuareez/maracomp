@@ -50,59 +50,60 @@ export default function CreateOrderRequest() {
   };
 
   const handleSubmitComponent = (e: any) => {
-    
-      e.preventDefault();
-      const { component, store, balance, date } = e.target.elements;
-      const _unit = components.find((comp: any) => comp._id === component.value);
-      const data = {
-        componentId: component.value,
-        storeId: store.value,
-        quantity: Number(balance.value),
-        unit: _unit.unit,
-      };
-      setDate(date.value);
-      const existingComponent = selectedComponents.find(
-        (item: any) =>
-          item.componentId === data.componentId && item.storeId === data.storeId
-      );
+    e.preventDefault();
+    const { component, store, balance, date } = e.target.elements;
+    const _unit = components.find((comp: any) => comp._id === component.value);
+    const data = {
+      componentId: component.value,
+      storeId: store.value,
+      quantity: Number(balance.value),
+      unit: _unit.unit,
+    };
+    setDate(date.value);
+    const existingComponent = selectedComponents.find(
+      (item: any) =>
+        item.componentId === data.componentId && item.storeId === data.storeId
+    );
 
-      if (existingComponent) {
-        const updatedSelectedComponent = selectedComponents.map((item: any) =>
-          item.componentId === data.componentId && item.storeId === data.storeId
-            ? { ...item, quantity: item.quantity + data.quantity }
-            : item
-        );
-        setSelectedComponents(updatedSelectedComponent);
-      } else {
-        setSelectedComponents([data, ...selectedComponents]);
-      }
-    
-    
+    if (existingComponent) {
+      const updatedSelectedComponent = selectedComponents.map((item: any) =>
+        item.componentId === data.componentId && item.storeId === data.storeId
+          ? { ...item, quantity: item.quantity + data.quantity }
+          : item
+      );
+      setSelectedComponents(updatedSelectedComponent);
+    } else {
+      setSelectedComponents([data, ...selectedComponents]);
+    }
   };
 
   const postSelectedComponents = async () => {
-    const dateISO = _date ? new Date(_date).toISOString().split("T")[0] : null;
-    const data = {
-      date: dateISO,
-      detail: selectedComponents,
-    };
-    const res = await axios.post(
-      `https://api-maracomp-production-864a.up.railway.app/orderRequest`,
-      data
-    );
-    if (res.status === 200 || res.status === 201) {
-      toast.success("Se ha creado la orden requerida!");
-      setSelectedComponents([]);
-      setDefaultStore(true);
-      setDefaultOption(true);
-      const { data } = await axios.get(
-        `https://api-maracomp-production-864a.up.railway.app/order`
+    try {
+      const dateISO = _date
+        ? new Date(_date).toISOString().split("T")[0]
+        : null;
+      const data = {
+        date: dateISO,
+        detail: selectedComponents,
+      };
+      const res = await axios.post(
+        `https://api-maracomp-production-864a.up.railway.app/orderRequest`,
+        data
       );
-      setOrders(data.reverse());
-      return;
+      if (res.status === 200 || res.status === 201) {
+        toast.success("Se ha creado la orden requerida!");
+        setSelectedComponents([]);
+        setDefaultStore(true);
+        setDefaultOption(true);
+        const { data } = await axios.get(
+          `https://api-maracomp-production-864a.up.railway.app/order`
+        );
+        setOrders(data.reverse());
+        return;
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     }
-
-    toast.error(res.statusText);
   };
 
   const indexOfLastComponent = currentPage * componentsPerPage;
