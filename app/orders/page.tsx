@@ -18,6 +18,7 @@ import {
   TrashIcon,
   PencilSquareIcon,
   EyeIcon,
+  CheckIcon,
 } from "@heroicons/react/24/outline";
 import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
@@ -199,7 +200,20 @@ export default function Page() {
                       <td className="text-ellipsis ">{order.status}</td>
                       <td className="text-ellipsis ">RD$ {order.total}</td>
                       <td className="flex flex-row  space-x-4 justify-end items-center">
+                        <button
+                          className="bg-verde hover:bg-verdeOscuro duration-300 p-3 rounded-md"
+                          // onClick={() => {
+                          //   handleDelete(order.code, index);
+                          // }}
+                        >
+                          <CheckIcon
+                            className="
+                                  w-6
+                                  text-white"
+                          />
+                        </button>
                         <DetailOrder code={order.code} />
+
                         <button
                           className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md"
                           onClick={() => {
