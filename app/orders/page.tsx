@@ -114,11 +114,10 @@ export default function Page() {
         toast.success("Se ha completado la orden exitosamente");
         orders[index].status = "COMPLETADA";
         setOrders([...orders]);
-        setInventoryMovement(
-          await axios.get(
-            "https://api-maracomp-production-864a.up.railway.app/inventorymovement"
-          )
+        const { data } = await axios.get(
+          "https://api-maracomp-production-864a.up.railway.app/inventorymovement"
         );
+        setInventoryMovement(data.reverse());
       }
     } catch (error) {}
   };

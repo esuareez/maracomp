@@ -76,7 +76,7 @@ export const StateProvider = ({ children }: any) => {
     fetchComponents();
   }, []);
   {
-    /* Buscar todas los dispach */
+    /* Buscar todas los inventory movement */
   }
   useEffect(() => {
     const fetchComponents = async () => {
