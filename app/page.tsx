@@ -5,7 +5,7 @@ import { metadata } from "./layout";
 import "material-icons/iconfont/material-icons.css";
 import Dona from "@/components/doughtnut";
 import Linea from "@/components/linear";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import CreateComponent from "@/components/createC";
@@ -13,11 +13,15 @@ import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
 import CreateDispach from "@/components/dispach/create";
 import CreateOrderRequest from "@/components/orderRequest/create";
-import { StateProvider } from "@/components/context/mainData";
+import { StateContext, StateProvider } from "@/components/context/mainData";
 
 metadata.title = "MaraComp | Inicio";
 export default function Home() {
   const [open, setOpen] = useState("hidden");
+  const { orderTotal, setOrderTotal } = useContext<any>(StateContext);
+  const { estimatedOrder, setEstimatedOrder } = useContext<any>(StateContext);
+  const { topStorages, setTopStorages } = useContext<any>(StateContext);
+  const { bestSellers, setBestSellers } = useContext<any>(StateContext);
 
   return (
     <div className="relative bg-gray-700 w-full min-h-[90%] flex flex-grow items-center justify-center">
@@ -32,7 +36,7 @@ export default function Home() {
                   Ordenes
                 </h1>
                 <div className="w-60 h-60">
-                  <Dona></Dona>
+                  <Dona total={orderTotal} />
                 </div>
               </div>
             </div>
@@ -41,76 +45,61 @@ export default function Home() {
                 <h1 className=" text-lg text-white/80 drop-shadow font-semibold">
                   Ordenes Completadas
                 </h1>
-                <h1 className="text-4xl text-white font-black">12</h1>
+                <h1 className="text-4xl text-white font-black">{orderTotal[2]}</h1>
               </div>
               <div className="row-span-3 w-full h-full bg-gradient-to-bl from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center">
                 <h1 className=" text-lg text-white/80 drop-shadow font-semibold">
                   Ordenes Pendientes
                 </h1>
-                <h1 className="text-4xl text-white font-black">12</h1>
+                <h1 className="text-4xl text-white font-black">{orderTotal[1] }</h1>
               </div>
             </div>
             <div className="col-span-4 gap-4 shadow grid grid-rows-6">
               <div className="row-span-3 w-full h-full bg-gradient-to-tr from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center">
                 <h1 className=" text-lg text-white/80 shadow-2xl font-semibold">
-                  Total Vendido
+                  Estimado en Órdenes
                 </h1>
-                <h1 className="text-4xl text-white font-black">12</h1>
+                <h1 className="text-4xl text-white font-black ">RD$ { estimatedOrder}</h1>
               </div>
               <div className="row-span-3 w-full h-full bg-gradient-to-br from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center">
                 <h1 className=" text-lg text-white/80 drop-shadow font-semibold">
                   Total Comprado
                 </h1>
-                <h1 className="text-4xl text-white font-black">12</h1>
+                <h1 className="text-4xl text-white font-black">-</h1>
               </div>
             </div>
           </div>
           {/* Cuadro de estadistica */}
-          <div
-            className="row-span-4 bg-white rounded-[20px]"
-            onClick={() => {
-              open === "block" ? setOpen("hidden") : open;
-            }}
-          >
-            <div className="grid grid-cols-12 p-5 h-full">
-              <div className="col-span-10 ">
-                <h1 className="font-bold text-3xl text-black">Estadística</h1>
-                <div className="w-full h-5/6">
-                  <Linea></Linea>
-                </div>
-              </div>
-              <div className="col-span-2">
-                <h1 className="font-bold text-3xl text-black grid grid-rows gap-4">
-                  Filtrar por:
+          <div className="row-span-2 grid grid-rows md:grid-cols-12 gap-4 ">
+            
+            <div className="col-span-4 gap-4 shadow grid grid-rows-6">
+              <div className="row-span-6 w-full h-full bg-gradient-to-tl from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center">
+                <h1 className=" text-lg text-white/80 drop-shadow font-semibold">
+                  TOP 5 Almacenes
                 </h1>
-                {/* DROPDOWN DE OPCIONES */}
-                <div className="relative inline-block text-left w-full pt-8 col-row-4">
-                  <div className="mt-2">
-                    <select
-                      id="country"
-                      name="country"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      <option>United States</option>
-                      <option>Canada</option>
-                      <option>Mexico</option>
-                    </select>
-                  </div>
-                </div>
-                {/* DROPDOWN DE OPCIONES */}
-                <div className="relative inline-block text-left w-full pt-8">
-                  <div className="mt-2">
-                    <select
-                      id="country"
-                      name="country"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                    >
-                      <option>United States</option>
-                      <option>Canada</option>
-                      <option>Mexico</option>
-                    </select>
-                  </div>
-                </div>
+                <ul>
+                {topStorages.map((storage: any) => (
+                  <li className="text-md text-white font-black">{ storage.description}</li>
+                ))}
+                </ul>
+              </div>
+            </div>
+            <div className="col-span-4 gap-4 shadow grid grid-rows-6">
+              <div className="row-span-6 w-full h-full bg-gradient-to-tl from-yellow-400 to-amber-500 from-50% rounded-[10px] shadow flex flex-col items-center justify-center">
+                <h1 className=" text-lg text-white/80 drop-shadow font-semibold">
+                  Componente más Vendido
+                </h1>
+                <h1 className="text-2xl text-white font-black">{ bestSellers.description}</h1>
+              </div>
+            </div>
+            <div className="col-span-4 gap-4 shadow grid grid-rows-6">
+              <div className="row-span-6 w-full h-full bg-verde rounded-[10px] shadow flex flex-col items-center justify-center">
+                <h1 className=" text-2xl text-white/80 drop-shadow font-semibold">
+                  Integrantes
+                </h1>
+                <h1 className="text-lg text-white font-black">Eliam Pimentel</h1>
+                <h1 className="text-lg text-white font-black">Luis Mota</h1>
+                <h1 className="text-lg text-white font-black">Diana Monegro</h1>
               </div>
             </div>
           </div>

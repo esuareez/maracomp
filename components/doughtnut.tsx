@@ -2,16 +2,16 @@
 import {Chart,ArcElement, Legend, Title, CategoryScale, LinearScale, PointElement, Filler, Tooltip} from 'chart.js';
 import {Doughnut} from 'react-chartjs-2'
 
-export default function Dona() {
+export default function Dona({total} : any) {
     Chart.register(ArcElement,Legend, Title, CategoryScale, LinearScale, PointElement, Filler, Tooltip);
     const data = {
         labels: [
-          'Red',
-          'Blue',
+          'Pendientes',
+          'Completadas',
         ],
         datasets: [{
           label: 'Cantidad',
-          data: [300, 50],
+          data: [total[1], total[2]],
           backgroundColor: [
             'rgb(255, 99, 132)',
             'rgb(54, 162, 235)',

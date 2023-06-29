@@ -15,6 +15,10 @@ export const StateProvider = ({ children }: any) => {
   const [orders, setOrders] = useState<any[]>([]);
   const [inventorymovement, setInventoryMovement] = useState<any[]>([]);
   const [supplierTime, setSupplierTime] = useState<any[]>([]);
+  const [orderTotal, setOrderTotal] = useState<any[]>([]);
+  const [estimatedOrder, setEstimatedOrder] = useState<any[]>([]);
+  const [topStorages, setTopStorages] = useState<any[]>([]);
+  const [bestSellers, setBestSellers] = useState<any[]>([]);
 
   {
     /* Buscar todos los componentes */
@@ -99,6 +103,46 @@ export const StateProvider = ({ children }: any) => {
     };
     fetchComponents();
   }, []);
+
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/order/count"
+      );
+      setOrderTotal(data);
+    };
+    fetchComponents();
+  }, []);
+
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/detailorder/totalAdquired"
+      );
+      setEstimatedOrder(data);
+    };
+    fetchComponents();
+  }, []);
+
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/detailorder/mostimportantstores"
+      );
+      setTopStorages(data);
+    };
+    fetchComponents();
+  }, []);
+
+  useEffect(() => {
+    const fetchComponents = async () => {
+      const { data } = await axios.get(
+        "https://api-maracomp-production-864a.up.railway.app/detailorder/bestsellercomponent"
+      );
+      setBestSellers(data);
+    };
+    fetchComponents();
+  }, []);
   // Pasa el estado y la función de actualización
 
   return (
@@ -118,6 +162,14 @@ export const StateProvider = ({ children }: any) => {
         setInventoryMovement,
         supplierTime,
         setSupplierTime,
+        orderTotal,
+        setOrderTotal,
+        estimatedOrder,
+        setEstimatedOrder, 
+        topStorages,
+        setTopStorages,
+        bestSellers,
+        setBestSellers
       }}
     >
       {children}

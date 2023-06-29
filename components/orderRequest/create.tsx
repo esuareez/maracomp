@@ -26,6 +26,7 @@ export default function CreateOrderRequest() {
   const [defaultOption, setDefaultOption] = useState(true);
   const [_date, setDate] = useState<Date>();
   const { orders, setOrders } = useContext<any>(StateContext);
+  const { orderTotal, setOrderTotal } = useContext<any>(StateContext);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [componentsPerPage, setComponentsPerPage] = useState(3);
@@ -101,6 +102,9 @@ export default function CreateOrderRequest() {
           `https://api-maracomp-production-864a.up.railway.app/order`
         );
         setOrders(data.reverse());
+
+        const res = "https://api-maracomp-production-864a.up.railway.app/order/count";
+        console.log(res)
         return;
       }
     } catch (error: any) {
