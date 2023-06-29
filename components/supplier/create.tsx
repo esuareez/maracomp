@@ -8,12 +8,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { StateContext } from "../context/mainData";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
-export default function CreateSupplier({ supplierId }: any) {
+export default function CreateSupplier() {
   const { suppliers, setSuppliers } = useContext<any>(StateContext);
-  const supplier =
-    supplierId !== null
-      ? suppliers.find((s: any) => s._id === supplierId)
-      : null;
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
@@ -27,27 +24,20 @@ export default function CreateSupplier({ supplierId }: any) {
     };
 
     let res = null;
-    if (supplier === null) {
-      res = await axios.post(
-        `https://api-maracomp-production-864a.up.railway.app/supplier`,
-        data
-      );
 
-      name.value = "";
-      rnc.value = "";
-      ciudad.value = "";
-      direccion.value = "";
-    } else {
-      res = await axios.put(
-        `https://api-maracomp-production-864a.up.railway.app/supplier/${supplierId}`,
-        data
-      );
-    }
+    res = await axios.post(
+      `https://api-maracomp-production-864a.up.railway.app/supplier`,
+      data
+    );
+
+    name.value = "";
+    rnc.value = "";
+    ciudad.value = "";
+    direccion.value = "";
 
     if (res.status < 300) {
-      supplierId === null
-        ? toast.success("¡El suplidor ha sido agregado con éxito!")
-        : toast.success("¡El suplidor ha sido editado con éxito!");
+      toast.success("¡El suplidor ha sido agregado con éxito!");
+
       const { data } = await axios.get(
         "https://api-maracomp-production-864a.up.railway.app/supplier"
       );
@@ -61,15 +51,9 @@ export default function CreateSupplier({ supplierId }: any) {
   return (
     <Popup
       trigger={
-        !supplier ? (
-          <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
-            Agregar Suplidor
-          </button>
-        ) : (
-          <button className="bg-orange-500 hover:bg-orange-600 duration-300 p-3 rounded-md">
-            <PencilSquareIcon className="w-6 text-white" />
-          </button>
-        )
+        <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
+          Agregar Suplidor
+        </button>
       }
       modal
       nested
@@ -81,9 +65,7 @@ export default function CreateSupplier({ supplierId }: any) {
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="font-bold text-3xl text-black">Suplidor</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                {supplier
-                  ? "Edita la información del suplidor."
-                  : "Agrega la información del suplidor."}
+                Agrega la información del suplidor.
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-4">
@@ -96,10 +78,10 @@ export default function CreateSupplier({ supplierId }: any) {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="name"
                       id="name"
-                      defaultValue={supplier ? supplier.name : ""}
                       autoComplete="supplier-name"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
@@ -115,11 +97,11 @@ export default function CreateSupplier({ supplierId }: any) {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="rnc"
                       id="rnc"
                       autoComplete="rnc"
-                      defaultValue={supplier ? supplier.rnc : ""}
                       maxLength={9}
                       minLength={0}
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -136,10 +118,10 @@ export default function CreateSupplier({ supplierId }: any) {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="ciudad"
                       name="ciudad"
                       type="text"
-                      defaultValue={supplier ? supplier.ciudad : ""}
                       autoComplete="ciudad"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
@@ -155,10 +137,10 @@ export default function CreateSupplier({ supplierId }: any) {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="direccion"
                       name="direccion"
                       type="text"
-                      defaultValue={supplier ? supplier.direccion : ""}
                       autoComplete="direccion"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />

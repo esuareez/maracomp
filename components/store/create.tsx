@@ -58,6 +58,7 @@ export default function CreateStore() {
                   </label>
                   <div className="mt-2">
                     <select
+                      required
                       id="component"
                       name="component"
                       autoComplete="componentn"
@@ -81,6 +82,7 @@ export default function CreateStore() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       type="text"
                       name="store"
                       id="store"
@@ -99,6 +101,7 @@ export default function CreateStore() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="balance"
                       name="balance"
                       type="Number"

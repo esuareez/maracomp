@@ -79,6 +79,8 @@ export default function CreateOrderRequest() {
 
   const postSelectedComponents = async () => {
     try {
+      if (selectedComponents.length === 0)
+        return toast.error("No hay componentes seleccionados");
       const dateISO = _date
         ? new Date(_date).toISOString().split("T")[0]
         : null;
@@ -247,6 +249,7 @@ export default function CreateOrderRequest() {
                     </label>
                     <div className="mt-2">
                       <input
+                        required
                         id="date"
                         name="date"
                         type="date"
@@ -254,33 +257,6 @@ export default function CreateOrderRequest() {
                         autoComplete="balance"
                         className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       />
-                    </div>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label
-                      htmlFor="balance"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Prioridad de la Orden
-                    </label>
-                    <div className="mt-2">
-                      <select
-                        required
-                        id="priority"
-                        name="priority"
-                        autoComplete="priority"
-                        className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      >
-                        <option
-                          disabled
-                          selected={defaultStore != true ? false : true}
-                          value=""
-                        >
-                          SELECCIONA PRIORIDAD
-                        </option>
-                        <option value="BARATO">Barato</option>
-                        <option value="RAPIDO">Entrega Rápida</option>
-                      </select>
                     </div>
                   </div>
                   <div className="sm:col-span-2">

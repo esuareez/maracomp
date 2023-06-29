@@ -19,6 +19,7 @@ import {
 import CreateStore from "@/components/store/create";
 import CreateSupplier from "@/components/supplier/create";
 import { StateContext } from "@/components/context/mainData";
+import EditSupplier from "@/components/supplier/edit";
 
 metadata.title = "MaraComp | Componentes";
 export default function Page() {
@@ -102,8 +103,7 @@ export default function Page() {
                                   text-white"
                           />
                         </button> */}
-
-                        <CreateSupplier supplierId={component._id} />
+                        <EditSupplier supplierId={component._id} />
 
                         <button className="bg-red-600 hover:bg-red-700 duration-300 p-3 rounded-md">
                           <TrashIcon

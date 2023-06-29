@@ -1,70 +1,55 @@
 "use client";
-import React, { useState, useEffect, useContext } from "react";
+import React, { use, useContext } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { StateContext } from "./context/mainData";
+import { StateContext } from "../context/mainData";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 
-export default function CreateComponent() {
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const { components, setComponents } = useContext<any>(StateContext);
+export default function EditSupplier({ supplierId }: any) {
+  const { suppliers, setSuppliers } = useContext<any>(StateContext);
+  const supplier =
+    supplierId !== null
+      ? suppliers.find((s: any) => s._id === supplierId)
+      : null;
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/supplier"
-      );
-      setSuppliers(data);
-    };
-    fetchData();
-  }, []);
-
-  let status: any = 0;
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
+    const { name, rnc, ciudad, direccion } = e.target.elements;
 
     const data = {
-      formComponent: {
-        description: event.target.component.value,
-        unit: event.target.unit.value,
-        balance: Number(event.target.balance.value),
-        storeDesc: event.target.store.value,
-      },
+      name: name.value,
+      rnc: rnc.value,
+      ciudad: ciudad.value,
+      direccion: direccion.value,
     };
-    const res = await axios.post(
-      "https://api-maracomp-production-864a.up.railway.app/store",
+
+    let res = null;
+
+    res = await axios.put(
+      `https://api-maracomp-production-864a.up.railway.app/supplier/${supplierId}`,
       data
     );
 
-    event.target.component.value = "";
-    event.target.unit.value = "";
-    event.target.balance.value = "";
-    event.target.store.value = "";
-
     if (res.status < 300) {
-      toast.success("¡El componente ha sido agregado con éxito!");
+      toast.success("¡El suplidor ha sido editado con éxito!");
       const { data } = await axios.get(
-        "https://api-maracomp-production-864a.up.railway.app/component"
+        "https://api-maracomp-production-864a.up.railway.app/supplier"
       );
-      setComponents(
-        data.sort((a: any, b: any) => {
-          const aCode = Number(a.code.replace("C-", ""));
-          const bCode = Number(b.code.replace("C-", ""));
-          return bCode - aCode;
-        })
-      );
+      setSuppliers(data.reverse());
       return;
     }
-    toast.error("Ha ocurrido un error tratando de agregar el componente");
+
+    toast.error("Ha ocurrido un error tratando de agregar el suplidor");
   };
 
   return (
     <Popup
       trigger={
-        <button className="h-3/6 w-full p-4 text-white font-semibold bg-verde hover:bg-verdeOscuro hover:text-white/80 hover:font-bold rounded-[10px]">
-          Crear Componente
+        <button className="bg-orange-500 hover:bg-orange-600 duration-300 p-3 rounded-md">
+          <PencilSquareIcon className="w-6 text-white" />
         </button>
       }
       modal
@@ -75,9 +60,9 @@ export default function CreateComponent() {
         <form method="POST" onSubmit={handleSubmit}>
           <div className="w-11/12 h-5/6 m-10 ">
             <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="font-bold text-3xl text-black">Componente</h2>
+              <h2 className="font-bold text-3xl text-black">Suplidor</h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
-                Agrega la información del componente.
+                Agrega la información del suplidor.
               </p>
 
               <div className="mt-10 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-4">
@@ -86,34 +71,16 @@ export default function CreateComponent() {
                     htmlFor="component"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Componente
+                    Nombre
                   </label>
                   <div className="mt-2">
                     <input
                       required
                       type="text"
-                      name="component"
-                      id="component"
-                      autoComplete="component"
-                      className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="unit"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Unidad
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      required
-                      type="text"
-                      name="unit"
-                      id="unit"
-                      autoComplete="unit"
+                      name="name"
+                      id="name"
+                      defaultValue={supplier ? supplier.name : ""}
+                      autoComplete="supplier-name"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -124,15 +91,18 @@ export default function CreateComponent() {
                     htmlFor="store"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Almacén
+                    RNC
                   </label>
                   <div className="mt-2">
                     <input
                       required
                       type="text"
-                      name="store"
-                      id="store"
-                      autoComplete="store-name"
+                      name="rnc"
+                      id="rnc"
+                      autoComplete="rnc"
+                      defaultValue={supplier ? supplier.rnc : ""}
+                      maxLength={9}
+                      minLength={0}
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
@@ -143,18 +113,36 @@ export default function CreateComponent() {
                     htmlFor="balance"
                     className="block text-sm font-medium leading-6 text-gray-900"
                   >
-                    Balance en Almacén
+                    Ciudad
                   </label>
                   <div className="mt-2">
                     <input
                       required
-                      id="balance"
-                      name="balance"
-                      type="Number"
-                      min={0}
-                      defaultValue={0}
-                      pattern={`[0-9]*`}
-                      autoComplete="balance"
+                      id="ciudad"
+                      name="ciudad"
+                      type="text"
+                      defaultValue={supplier ? supplier.ciudad : ""}
+                      autoComplete="ciudad"
+                      className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label
+                    htmlFor="balance"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Dirección
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      required
+                      id="direccion"
+                      name="direccion"
+                      type="text"
+                      defaultValue={supplier ? supplier.direccion : ""}
+                      autoComplete="direccion"
                       className="block w-5/6 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>

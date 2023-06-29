@@ -82,6 +82,7 @@ export default function CreateSupplierTime({ componentId }: any) {
                   </label>
                   <div className="mt-2">
                     <select
+                      required
                       id="supplier"
                       name="supplier"
                       autoComplete="supplier-name"
@@ -105,6 +106,7 @@ export default function CreateSupplierTime({ componentId }: any) {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="price"
                       name="price"
                       type="Number"
@@ -126,6 +128,7 @@ export default function CreateSupplierTime({ componentId }: any) {
                   </label>
                   <div className="mt-2">
                     <input
+                      required
                       id="discount"
                       name="discount"
                       type="Number"
@@ -151,6 +154,7 @@ export default function CreateSupplierTime({ componentId }: any) {
                   <div className="mt-2">
                     <div className="mt-2">
                       <input
+                        required
                         id="deliveryTimeInDays"
                         name="deliveryTimeInDays"
                         type="Number"
